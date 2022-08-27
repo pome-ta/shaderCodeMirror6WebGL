@@ -1,0 +1,21 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "build": "rollup -c"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pome-ta/codeMirror6WegGLshader.git"
+  },
+  "dependencies": {
+    "codemirror": "latest"
+  },
+  "devDependencies": {
+    "express": "latest",
+    "rollup": "^2.77.2"
+    "@rollup/plugin-node-resolve": "^13.3.0"
+  }
+}
