@@ -40,7 +40,4 @@ if __name__ == '__main__':
   uri_path = pathlib.Path('./docs/index.html')
   view = View(uri_path)
   view.present(style='fullscreen', orientations=['portrait'])
-Footer
-© 2022 GitHub, Inc.
-Footer navigation
-Terms
+
