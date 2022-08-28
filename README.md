@@ -1,1 +1,1 @@
-# codeMirror6WegGLshader
+# shaderCodeMirror6WegGL
