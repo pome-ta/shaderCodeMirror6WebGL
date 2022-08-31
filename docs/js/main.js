@@ -8,4 +8,3 @@ container.style.height = '100%';
 document.body.appendChild(container).appendChild(editorDiv);
 
 //editorDiv.style.height = '100%';
-
