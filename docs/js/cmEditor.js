@@ -1,6 +1,11 @@
-import { EditorView } from 'codemirror';
-import { minimalSetup } from 'codemirror';
+import { EditorView, minimalSetup } from 'codemirror';
+
 import { EditorState } from '@codemirror/state';
+import {
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightActiveLine,
+} from '@codemirror/view';
 
 const createDiv = () => {
   const ele = document.createElement('div');
@@ -12,7 +17,12 @@ const editorDiv = createDiv();
 const state = EditorState.create({
   doc: `sample text😇
   ほげ、ほげ。`,
-  extensions: [minimalSetup],
+  extensions: [
+    minimalSetup,
+    lineNumbers(),
+    highlightActiveLineGutter(),
+    highlightActiveLine(),
+  ],
 });
 
 const editor = new EditorView({
