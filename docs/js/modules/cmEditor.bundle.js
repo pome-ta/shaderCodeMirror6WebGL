@@ -16272,8 +16272,12 @@ const minimalSetup = /*@__PURE__*/(() => [
     ])
 ])();
 
-const editorDiv = document.createElement('div');
-//editorDiv.style.width = '100%';
+const createDiv = () => {
+  const ele = document.createElement('div');
+  ele.style.width = '100%';
+  return ele;
+};
+const editorDiv = createDiv();
 
 const state = EditorState.create({
   doc: `sample text😇
