@@ -9,6 +9,9 @@ canvasDiv.style.top = 0;
 canvasDiv.style.left = 0;
 canvasDiv.style.zIndex = 0;
 
+
+//element.parentNode
+
 let currentMode = Fragmen.MODE_CLASSIC; // 現在の Fragmen モード
 let currentSource = ''; // 直近のソースコード
 
