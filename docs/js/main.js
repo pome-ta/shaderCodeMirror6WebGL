@@ -1,5 +1,5 @@
 import { editor, editorDiv } from './modules/cmEditor.bundle.js';
-import { Fragmen } from './fragmen.js';
+import { Fragmen } from './shaderCanvas/fragmen.js';
 
 
 const container = document.createElement('div');

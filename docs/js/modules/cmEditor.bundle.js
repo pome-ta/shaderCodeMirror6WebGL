@@ -9689,14 +9689,18 @@ class DOMObserver {
         }
     }
     onSelectionChange(event) {
+        let wasChanged = this.selectionChanged;
         if (!this.readSelectionRange() || this.delayedAndroidKey)
             return;
         let { view } = this, sel = this.selectionRange;
         if (view.state.facet(editable) ? view.root.activeElement != this.dom : !hasSelection(view.dom, sel))
             return;
         let context = sel.anchorNode && view.docView.nearest(sel.anchorNode);
-        if (context && context.ignoreEvent(event))
+        if (context && context.ignoreEvent(event)) {
+            if (!wasChanged)
+                this.selectionChanged = false;
             return;
+        }
         // Deletions on IE11 fire their events in the wrong order, giving
         // us a selection change event before the DOM changes are
         // reported.
@@ -11027,6 +11031,11 @@ the editor's vertical layout structure. The ones provided as
 functions are called _after_ the new viewport has been computed,
 and thus **must not** introduce block widgets or replacing
 decorations that cover line breaks.
+
+If you want decorated ranges to behave like atomic units for
+cursor motion and deletion purposes, also provide the range set
+containing the decorations to
+[`EditorView.atomicRanges`](https://codemirror.net/6/docs/ref/#view.EditorView^atomicRanges).
 */
 EditorView.decorations = decorations;
 /**
@@ -12498,6 +12507,10 @@ class Tree {
     /// position. If 1, it'll move into nodes that start at the
     /// position. With 0, it'll only enter nodes that cover the position
     /// from both sides.
+    ///
+    /// Note that this will not enter
+    /// [overlays](#common.MountedTree.overlay), and you often want
+    /// [`resolveInner`](#common.Tree.resolveInner) instead.
     resolve(pos, side = 0) {
         let node = resolveNode(CachedNode.get(this) || this.topNode, pos, side, false);
         CachedNode.set(this, node);
