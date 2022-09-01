@@ -1,6 +1,13 @@
 import { Fragmen } from './fragmen.js';
 
 const canvasDiv = document.createElement('div');
+canvasDiv.style.width = '100%';
+canvasDiv.style.height = '100%';
+
+canvasDiv.style.position = 'fixed';
+canvasDiv.style.top = 0;
+canvasDiv.style.left = 0;
+canvasDiv.style.zIndex = 0;
 
 let currentMode = Fragmen.MODE_CLASSIC; // 現在の Fragmen モード
 let currentSource = ''; // 直近のソースコード
