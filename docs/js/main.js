@@ -16,6 +16,7 @@ container.appendChild(editorDiv);
 document.body.appendChild(container);
 
 const fragmen = new Fragmen(option);
+
 fragmen.mode = currentMode;
 fragmen.render(currentSource);
 // fragmen.reset();
