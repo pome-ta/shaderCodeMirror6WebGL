@@ -7,8 +7,9 @@ import {
   currentSource,
 } from './shaderCanvas/index.js';
 
-const container = document.createElement('div');
-container.id = 'mainWrap';
+const container = document.createElement('main');
+container.id = 'mainContainer';
+
 
 container.appendChild(canvasDiv);
 container.appendChild(editorDiv);
