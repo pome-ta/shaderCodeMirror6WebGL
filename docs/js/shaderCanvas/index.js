@@ -3,6 +3,8 @@ import { Fragmen } from './fragmen.js';
 const canvasDiv = document.createElement('div');
 canvasDiv.style.width = '100%';
 canvasDiv.style.height = '100%';
+canvasDiv.width = 8;
+canvasDiv.height = 8;
 
 canvasDiv.style.position = 'fixed';
 canvasDiv.style.top = 0;
