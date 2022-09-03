@@ -195,6 +195,7 @@ ${declareO}void main(){vec2 p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-m;for(int i=0;
    */
   static get ES_300_CHUNK() {
     return '#version 300 es\n';
+    //return '';
   }
   /**
    * ギーカーモード時に先頭に付与されるフラグメントシェーダのコード

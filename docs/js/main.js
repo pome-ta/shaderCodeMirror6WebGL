@@ -7,6 +7,22 @@ import {
   currentSource,
 } from './shaderCanvas/index.js';
 
+
+async function fetchShader(path) {
+  const res = await fetch(path);
+  const shaderText = await res.text();
+  return shaderText;
+}
+
+
+let startSource;
+
+const fsPath = './shaders/fs/fsMain.js';
+startSource = await fetchShader(fsPath);
+
+
+
+
 const container = document.createElement('main');
 container.id = 'mainContainer';
 
@@ -19,4 +35,13 @@ const fragmen = new Fragmen(option);
 
 fragmen.mode = currentMode;
 fragmen.render(currentSource);
+//console.log(currentSource)
+
 // fragmen.reset();
+window.addEventListener('load', ()=>{
+console.log('hoge')
+})
+
+//fragmen.render(startSource);
+
+//console.log(startSource)
