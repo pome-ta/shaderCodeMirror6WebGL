@@ -15,7 +15,7 @@ const createDiv = (idName) => {
   ele.style.width = '100%';
   return ele;
 };
-const editorDiv = createDiv('editorWrap');
+const editorDiv = createDiv('editorMain');
 
 const state = EditorState.create({
   doc: `sample text😇

@@ -7,16 +7,24 @@ import {
   currentSource,
 } from './shaderCanvas/index.js';
 
+
+
 async function fetchShader(path) {
   const res = await fetch(path);
   const shaderText = await res.text();
   return shaderText;
 }
 
-let startSource;
+/* -- loadSource */
+let loadSource;
 const fsPath = './shaders/fs/fsMain.js';
-startSource = await fetchShader(fsPath);
+loadSource = await fetchShader(fsPath);
 
+
+const statusLogDiv = document.createElement('div');
+
+
+/* -- main */
 const container = document.createElement('main');
 container.id = 'mainContainer';
 
@@ -28,4 +36,4 @@ const fragmen = new Fragmen(option);
 
 fragmen.mode = currentMode;
 // fragmen.render(currentSource);
-fragmen.render(startSource);
+fragmen.render(loadSource);
