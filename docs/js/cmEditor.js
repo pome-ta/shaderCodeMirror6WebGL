@@ -17,6 +17,16 @@ const createDiv = (idName) => {
 };
 const editorDiv = createDiv('editorMain');
 
+const overflowView = EditorView.theme({
+  '&': { maxHeight: `${visualViewport.height}` },
+  '.cm-gutter,.cm-content': { minHeight: `${visualViewport.height}` },
+  '.cm-scroller': {
+    overflow: 'auto',
+    fontFamily:
+      'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
+  },
+});
+
 const state = EditorState.create({
   doc: `sample text😇
   ほげ、ほげ。`,
@@ -25,6 +35,7 @@ const state = EditorState.create({
     lineNumbers(),
     highlightActiveLineGutter(),
     highlightActiveLine(),
+    // overflowView,
   ],
 });
 
