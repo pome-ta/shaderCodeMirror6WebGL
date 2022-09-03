@@ -18,6 +18,7 @@ let loadSource;
 const fsPath = './shaders/fs/fsMain.js';
 loadSource = await fetchShader(fsPath);
 
+/* -- set layout */
 const editorsWrap = document.createElement('div');
 editorsWrap.id = 'wrap';
 editorsWrap.style.position = 'relative';
@@ -28,11 +29,37 @@ editorsWrap.style.height = '100%';
 editorDiv.style.overflow = 'auto';
 
 const statusLogDiv = document.createElement('div');
-//statusLogDiv.style.position = 'sticky';
-//statusLogDiv.style.bottom = 0;
+statusLogDiv.style.position = 'sticky';
+statusLogDiv.style.bottom = 0;
 statusLogDiv.textContent = ' ● ready';
 statusLogDiv.style.height = '2rem';
-statusLogDiv.style.backgroundColor = 'red';
+statusLogDiv.style.fontFamily = 'monospace';
+statusLogDiv.style.backgroundColor = '#111';
+statusLogDiv.style.color= '#1DA1F2'
+
+/*
+lineout {
+    background-color: #111;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    color: #1DA1F2;
+    font-size: 14px;
+    line-height: 30px;
+    padding: 0px 10px;
+    width: calc(100% - 1px);
+    display: flex;
+    min-height: 32px;
+    max-height: 32px;
+    overflow: hidden;
+}
+.lineout.warn {
+    color: orangered;
+}
+.lineout.error {
+    color: #FF517B;
+}
+*/
+
 
 editorsWrap.appendChild(editorDiv);
 editorsWrap.appendChild(statusLogDiv);
