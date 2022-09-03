@@ -28,8 +28,8 @@ editorsWrap.style.height = '100%';
 editorDiv.style.overflow = 'auto';
 
 const statusLogDiv = document.createElement('div');
-// statusLogDiv.style.position = 'sticky';
-// statusLogDiv.style.bottom = 0;
+//statusLogDiv.style.position = 'sticky';
+//statusLogDiv.style.bottom = 0;
 statusLogDiv.textContent = ' ● ready';
 statusLogDiv.style.height = '2rem';
 statusLogDiv.style.backgroundColor = 'red';
