@@ -14,7 +14,6 @@ async function fetchShader(path) {
 }
 
 let startSource;
-
 const fsPath = './shaders/fs/fsMain.js';
 startSource = await fetchShader(fsPath);
 

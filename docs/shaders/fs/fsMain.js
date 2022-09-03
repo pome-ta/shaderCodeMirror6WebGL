@@ -20,7 +20,7 @@ void main(){
   }
   float pct = plot(uv);
   // float line = (1.0 - pct) * 1.0 + pct * abs(sin(time));
-  float line = pct * abs(sin(time));
+  float line = pct * abs(tan(time));
   vec3 color = vec3(uv, line); 
   // outColor = vec4(p.xxy, 1.0);
   outColor = vec4(color, 1.0);
