@@ -16721,15 +16721,34 @@ const createDiv = (idName) => {
 };
 const editorDiv = createDiv('editorMain');
 
-EditorView.theme({
-  '&': { maxHeight: `${visualViewport.height}` },
-  '.cm-gutter,.cm-content': { minHeight: `${visualViewport.height}` },
-  '.cm-scroller': {
-    overflow: 'auto',
-    fontFamily:
-      'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
+let myTheme = EditorView.theme(
+  {
+    '&': {
+      color: 'white',
+      backgroundColor: '#034',
+    },
+    '.cm-scroller': {
+      fontSize: '0.8rem',
+      fontFamily:
+        'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
+    },
+    '.cm-content': {
+      caretColor: '#0e9',
+    },
+    '&.cm-focused .cm-cursor': {
+      borderLeftColor: '#0e9',
+    },
+    '&.cm-focused .cm-selectionBackground, ::selection': {
+      backgroundColor: '#074',
+    },
+    '.cm-gutters': {
+      backgroundColor: '#045',
+      color: '#ddd',
+      border: 'none',
+    },
   },
-});
+  { dark: true }
+);
 
 const state = EditorState.create({
   doc: `sample text😇
@@ -16739,7 +16758,7 @@ const state = EditorState.create({
     lineNumbers(),
     highlightActiveLineGutter(),
     highlightActiveLine(),
-    // overflowView,
+    myTheme,
   ],
 });
 
