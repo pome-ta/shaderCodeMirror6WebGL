@@ -7,7 +7,6 @@ uniform sampler2D backbuffer;
 
 out vec4 outColor;
 
-
 float plot(vec2 st) {
   return smoothstep(0.01, 0.0, abs(st.y - st.x));
 }

@@ -28,7 +28,7 @@ let myTheme = EditorView.theme(
       fontFamily:
         'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
     },
-  },
+  }
   //{ dark: true }
 );
 
@@ -48,4 +48,4 @@ const editor = new EditorView({
   parent: editorDiv,
 });
 
-export { editor, editorDiv, EditorState };
+export { editor, editorDiv };

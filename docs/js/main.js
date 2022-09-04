@@ -1,4 +1,4 @@
-import { editor, editorDiv, EditorState } from './modules/cmEditor.bundle.js';
+import { editor, editorDiv } from './modules/cmEditor.bundle.js';
 import {
   Fragmen,
   canvasDiv,
@@ -70,9 +70,10 @@ container.appendChild(canvasDiv);
 container.appendChild(editorsWrap);
 document.body.appendChild(container);
 
-
-
-editor.setState(EditorState.create({doc: loadSource}))
+const initTransaction = editor.state.update({
+  changes: { from: 0, insert: loadSource },
+});
+editor.dispatch(initTransaction);
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
