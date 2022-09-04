@@ -13,6 +13,16 @@ async function fetchShader(path) {
   return shaderText;
 }
 
+const logSuccessColor = '#1da1f2';
+const logWarnColor = 'orangered';
+const logErrorColor = '#ff517b';
+
+const logColor = {
+  success: logSuccessColor,
+  warn: logWarnColor,
+  error: logErrorColor,
+};
+
 /* -- loadSource */
 let loadSource;
 const fsPath = './shaders/fs/fsMain.js';
@@ -29,49 +39,23 @@ editorsWrap.style.height = '100%';
 editorDiv.style.overflow = 'auto';
 
 const statusLogDiv = document.createElement('div');
-statusLogDiv.style.height = '4rem';
-// statusLogDiv.style.fontFamily = 'monospace, serif';
-statusLogDiv.style.fontSize = '0.8rem';
-statusLogDiv.style.backgroundColor = '#111';
+statusLogDiv.style.height = '2rem';
+// statusLogDiv.style.backgroundColor = '#111';
+// todo: 常に下部に表示
 statusLogDiv.style.position = 'sticky';
 statusLogDiv.style.bottom = 0;
-
+// テキストの上下センター表示
 statusLogDiv.style.display = 'flex';
 statusLogDiv.style.alignItems = 'center';
 
-// const logText = document.createElement('p');
-const logText = document.createElement('span');
+const logText = document.createElement('p');
+// const logText = document.createElement('span');
+logText.style.margin = '0 1rem';
+logText.style.fontSize = '0.8rem';
 logText.style.fontFamily = 'monospace, serif';
-// logText.style.height = '100%';
-// logText.style.verticalAlign = 'middle';
-// logText.style.verticalAlign = 'bottom';
 logText.textContent = ' ● ready';
-logText.style.color = 'orangered';
-logText.style.backgroundColor = '#1DA1F2';
-//logText.style.color = '#1DA1F2';
+logText.style.color = logColor['success'];
 
-/*
-lineout {
-    background-color: #111;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-    color: #1DA1F2;
-    font-size: 14px;
-    line-height: 30px;
-    padding: 0px 10px;
-    width: calc(100% - 1px);
-    display: flex;
-    min-height: 32px;
-    max-height: 32px;
-    overflow: hidden;
-}
-.lineout.warn {
-    color: orangered;
-}
-.lineout.error {
-    color: #FF517B;
-}
-*/
 statusLogDiv.appendChild(logText);
 editorsWrap.appendChild(editorDiv);
 editorsWrap.appendChild(statusLogDiv);
@@ -87,6 +71,7 @@ document.body.appendChild(container);
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
+  logText.style.color = logColor[status];
   logText.textContent = msg;
 });
 fragmen.mode = currentMode;

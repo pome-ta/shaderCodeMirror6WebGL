@@ -878,12 +878,12 @@ void main(){
       msg = this.formatErrorMessage(msg);
       console.warn(msg);
       if (this.onBuildCallback != null) {
-        this.onBuildCallback('error', ` ● [ ${t} ] ${msg}`);
+        this.onBuildCallback('error', ` ● [${t}] > ${msg}`);
       }
       return false;
     }
     if (this.onBuildCallback != null) {
-      this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
+      this.onBuildCallback('success', ` ● [${t}] > shader compile succeeded`);
     }
     this.gl.attachShader(p, k);
     const l = this.gl.getShaderInfoLog(k);
