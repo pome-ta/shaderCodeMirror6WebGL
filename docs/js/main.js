@@ -52,7 +52,8 @@ const logText = document.createElement('p');
 // const logText = document.createElement('span');
 logText.style.margin = '0 1rem';
 logText.style.fontSize = '0.8rem';
-logText.style.fontFamily = 'monospace, serif';
+logText.style.fontFamily =
+  'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 logText.textContent = ' ● ready';
 logText.style.color = logColor['success'];
 
