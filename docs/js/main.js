@@ -32,12 +32,16 @@ const statusLogDiv = document.createElement('div');
 const logText = document.createElement('span');
 statusLogDiv.style.position = 'sticky';
 statusLogDiv.style.bottom = 0;
-statusLogDiv.textContent = ' ● ready';
 statusLogDiv.style.height = '2rem';
+statusLogDiv.style.backgroundColor = '#111';
 statusLogDiv.style.fontFamily = 'monospace';
-// statusLogDiv.style.backgroundColor = '#111';
-statusLogDiv.style.color = '#1DA1F2';
-// statusLogDiv.style.color = 'orangered';
+//statusLogDiv.style.color = 'orangered';
+//logText.style.width = '100%';
+logText.textContent = ' ● ready';
+logText.style.color = 'orangered';
+logText.style.backgroundColor = '#1DA1F2';
+//logText.style.color = '#1DA1F2';
+
 /*
 lineout {
     background-color: #111;
@@ -60,7 +64,7 @@ lineout {
     color: #FF517B;
 }
 */
-
+statusLogDiv.appendChild(logText)
 editorsWrap.appendChild(editorDiv);
 editorsWrap.appendChild(statusLogDiv);
 
@@ -75,7 +79,7 @@ document.body.appendChild(container);
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
-  statusLogDiv.textContent = msg;
+  logText.textContent = msg;
 });
 fragmen.mode = currentMode;
 fragmen.render(loadSource);
