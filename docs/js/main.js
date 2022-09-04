@@ -29,14 +29,22 @@ editorsWrap.style.height = '100%';
 editorDiv.style.overflow = 'auto';
 
 const statusLogDiv = document.createElement('div');
-const logText = document.createElement('span');
+statusLogDiv.style.height = '4rem';
+// statusLogDiv.style.fontFamily = 'monospace, serif';
+statusLogDiv.style.fontSize = '0.8rem';
+statusLogDiv.style.backgroundColor = '#111';
 statusLogDiv.style.position = 'sticky';
 statusLogDiv.style.bottom = 0;
-statusLogDiv.style.height = '2rem';
-statusLogDiv.style.backgroundColor = '#111';
-statusLogDiv.style.fontFamily = 'monospace';
-//statusLogDiv.style.color = 'orangered';
-//logText.style.width = '100%';
+
+statusLogDiv.style.display = 'flex';
+statusLogDiv.style.alignItems = 'center';
+
+// const logText = document.createElement('p');
+const logText = document.createElement('span');
+logText.style.fontFamily = 'monospace, serif';
+// logText.style.height = '100%';
+// logText.style.verticalAlign = 'middle';
+// logText.style.verticalAlign = 'bottom';
 logText.textContent = ' ● ready';
 logText.style.color = 'orangered';
 logText.style.backgroundColor = '#1DA1F2';
@@ -64,7 +72,7 @@ lineout {
     color: #FF517B;
 }
 */
-statusLogDiv.appendChild(logText)
+statusLogDiv.appendChild(logText);
 editorsWrap.appendChild(editorDiv);
 editorsWrap.appendChild(statusLogDiv);
 
