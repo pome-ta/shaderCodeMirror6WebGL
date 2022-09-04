@@ -20,35 +20,20 @@ const editorDiv = createDiv('editorMain');
 let myTheme = EditorView.theme(
   {
     '&': {
-      color: 'white',
-      backgroundColor: '#034',
+      //color: 'white',
+      //backgroundColor: '#00000000',
+      fontSize: '0.8rem',
     },
     '.cm-scroller': {
-      fontSize: '0.8rem',
       fontFamily:
         'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
     },
-    '.cm-content': {
-      caretColor: '#0e9',
-    },
-    '&.cm-focused .cm-cursor': {
-      borderLeftColor: '#0e9',
-    },
-    '&.cm-focused .cm-selectionBackground, ::selection': {
-      backgroundColor: '#074',
-    },
-    '.cm-gutters': {
-      backgroundColor: '#045',
-      color: '#ddd',
-      border: 'none',
-    },
   },
-  { dark: true }
+  //{ dark: true }
 );
 
 const state = EditorState.create({
-  doc: `sample text😇
-  ほげ、ほげ。`,
+  doc: '',
   extensions: [
     minimalSetup,
     lineNumbers(),
@@ -63,4 +48,4 @@ const editor = new EditorView({
   parent: editorDiv,
 });
 
-export { editor, editorDiv };
+export { editor, editorDiv, EditorState };

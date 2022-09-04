@@ -1,4 +1,4 @@
-import { editor, editorDiv } from './modules/cmEditor.bundle.js';
+import { editor, editorDiv, EditorState } from './modules/cmEditor.bundle.js';
 import {
   Fragmen,
   canvasDiv,
@@ -69,6 +69,10 @@ container.style.height = '100%';
 container.appendChild(canvasDiv);
 container.appendChild(editorsWrap);
 document.body.appendChild(container);
+
+
+
+editor.setState(EditorState.create({doc: loadSource}))
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
