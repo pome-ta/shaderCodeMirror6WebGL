@@ -35,8 +35,8 @@ statusLogDiv.textContent = ' ● ready';
 statusLogDiv.style.height = '2rem';
 statusLogDiv.style.fontFamily = 'monospace';
 statusLogDiv.style.backgroundColor = '#111';
-statusLogDiv.style.color= '#1DA1F2'
-
+statusLogDiv.style.color = '#1DA1F2';
+statusLogDiv.style.color = 'orangered';
 /*
 lineout {
     background-color: #111;
@@ -59,7 +59,6 @@ lineout {
     color: #FF517B;
 }
 */
-
 
 editorsWrap.appendChild(editorDiv);
 editorsWrap.appendChild(statusLogDiv);
