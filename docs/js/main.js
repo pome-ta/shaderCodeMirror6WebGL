@@ -13,14 +13,15 @@ async function fetchShader(path) {
   return shaderText;
 }
 
-const logSuccessColor = '#1da1f2';
-const logWarnColor = 'orangered';
-const logErrorColor = '#ff517b';
-
-const logColor = {
-  success: logSuccessColor,
-  warn: logWarnColor,
-  error: logErrorColor,
+const logColor = () => {
+  const logSuccessColor = '#1da1f2';
+  const logWarnColor = 'orangered';
+  const logErrorColor = '#ff517b';
+  return {
+    success: logSuccessColor,
+    warn: logWarnColor,
+    error: logErrorColor,
+  };
 };
 
 /* -- loadSource */
