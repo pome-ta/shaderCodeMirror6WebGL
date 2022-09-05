@@ -16736,12 +16736,15 @@ let myTheme = EditorView.theme(
   //{ dark: true }
 );
 
+const tabSize = new Compartment();
+
 const initExtensions = [
   minimalSetup,
   lineNumbers(),
   highlightActiveLineGutter(),
   highlightActiveLine(),
   EditorView.lineWrapping, // 改行
+  tabSize.of(EditorState.tabSize.of(2)),
   myTheme,
 ];
 

@@ -1,6 +1,6 @@
 import { EditorView, minimalSetup } from 'codemirror';
 
-import { EditorState } from '@codemirror/state';
+import { EditorState, Compartment } from '@codemirror/state';
 import {
   lineNumbers,
   highlightActiveLineGutter,
@@ -32,12 +32,15 @@ let myTheme = EditorView.theme(
   //{ dark: true }
 );
 
+const tabSize = new Compartment();
+
 const initExtensions = [
   minimalSetup,
   lineNumbers(),
   highlightActiveLineGutter(),
   highlightActiveLine(),
   EditorView.lineWrapping, // 改行
+  tabSize.of(EditorState.tabSize.of(2)),
   myTheme,
 ];
 
