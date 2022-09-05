@@ -32,7 +32,6 @@ loadSource = await fetchShader(fsPath);
 const editorsWrap = document.createElement('div');
 editorsWrap.id = 'wrap';
 editorsWrap.style.position = 'relative';
-// editorsWrap.style.zIndex = 1;
 editorsWrap.style.display = 'grid';
 editorsWrap.style.gridTemplateRows = '1fr auto';
 editorsWrap.style.height = '100%';
