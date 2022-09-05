@@ -1,4 +1,9 @@
-import { editor, editorDiv } from './modules/cmEditor.bundle.js';
+import {
+  EditorView,
+  EditorState,
+  initExtensions,
+  editorDiv,
+} from './modules/cmEditor.bundle.js';
 import {
   Fragmen,
   canvasDiv,
@@ -11,6 +16,23 @@ async function fetchShader(path) {
   const res = await fetch(path);
   const shaderText = await res.text();
   return shaderText;
+}
+
+const updateCallback = EditorView.updateListener.of(
+  (update) => update.docChanged && onChange(update.state.doc.toString())
+);
+
+function onChange(docs) {
+  if (fragmen == null) {
+    return;
+  }
+  fragmen.render(docs);
+  /*
+  try {
+    fragmen.render(docs);
+  } catch {}
+  // editor.destroy();
+  */
 }
 
 const logSuccessColor = '#1da1f2';
@@ -69,10 +91,16 @@ container.appendChild(canvasDiv);
 container.appendChild(editorsWrap);
 document.body.appendChild(container);
 
-const initTransaction = editor.state.update({
-  changes: { from: 0, insert: loadSource },
+const extensions = [...initExtensions, updateCallback];
+const state = EditorState.create({
+  doc: loadSource,
+  extensions: extensions,
 });
-editor.dispatch(initTransaction);
+
+const editor = new EditorView({
+  state,
+  parent: editorDiv,
+});
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {

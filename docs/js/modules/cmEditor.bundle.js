@@ -16736,21 +16736,13 @@ let myTheme = EditorView.theme(
   //{ dark: true }
 );
 
-const state = EditorState.create({
-  doc: '',
-  extensions: [
-    minimalSetup,
-    lineNumbers(),
-    highlightActiveLineGutter(),
-    highlightActiveLine(),
-    EditorView.lineWrapping, // 改行
-    myTheme,
-  ],
-});
+const initExtensions = [
+  minimalSetup,
+  lineNumbers(),
+  highlightActiveLineGutter(),
+  highlightActiveLine(),
+  EditorView.lineWrapping, // 改行
+  myTheme,
+];
 
-const editor = new EditorView({
-  state,
-  parent: editorDiv,
-});
-
-export { editor, editorDiv };
+export { EditorState, EditorView, editorDiv, initExtensions };

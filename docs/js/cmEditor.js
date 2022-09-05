@@ -32,6 +32,16 @@ let myTheme = EditorView.theme(
   //{ dark: true }
 );
 
+const initExtensions = [
+  minimalSetup,
+  lineNumbers(),
+  highlightActiveLineGutter(),
+  highlightActiveLine(),
+  EditorView.lineWrapping, // 改行
+  myTheme,
+];
+
+/*
 const state = EditorState.create({
   doc: '',
   extensions: [
@@ -48,5 +58,6 @@ const editor = new EditorView({
   state,
   parent: editorDiv,
 });
+*/
 
-export { editor, editorDiv };
+export { EditorView, EditorState, initExtensions, editorDiv };
