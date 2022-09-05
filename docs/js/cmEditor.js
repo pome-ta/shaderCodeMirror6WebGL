@@ -39,6 +39,7 @@ const state = EditorState.create({
     lineNumbers(),
     highlightActiveLineGutter(),
     highlightActiveLine(),
+    EditorView.lineWrapping, // 改行
     myTheme,
   ],
 });

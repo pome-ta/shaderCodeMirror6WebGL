@@ -1,6 +1,6 @@
 # shaderCodeMirror6WebGL
 
-[pages](https://pome-ta.github.io/shaderCodeMirror6WebGL/)
+[playground - pages](https://pome-ta.github.io/shaderCodeMirror6WebGL/)
 
 ## WebGL Core
 

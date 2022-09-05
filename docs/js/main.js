@@ -13,15 +13,14 @@ async function fetchShader(path) {
   return shaderText;
 }
 
-const logColor = () => {
-  const logSuccessColor = '#1da1f2';
-  const logWarnColor = 'orangered';
-  const logErrorColor = '#ff517b';
-  return {
-    success: logSuccessColor,
-    warn: logWarnColor,
-    error: logErrorColor,
-  };
+const logSuccessColor = '#1da1f2';
+const logWarnColor = 'orangered';
+const logErrorColor = '#ff517b';
+
+const logColor = {
+  success: logSuccessColor,
+  warn: logWarnColor,
+  error: logErrorColor,
 };
 
 /* -- loadSource */
@@ -55,7 +54,7 @@ logText.style.fontSize = '0.8rem';
 logText.style.fontFamily =
   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 logText.textContent = ' ● ready';
-logText.style.color = logColor['success'];
+logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
 editorsWrap.appendChild(editorDiv);
