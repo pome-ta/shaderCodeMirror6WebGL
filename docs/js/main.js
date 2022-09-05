@@ -23,7 +23,7 @@ const updateCallback = EditorView.updateListener.of(
 );
 
 function onChange(docs) {
-  if (fragmen == null) {
+  if (fragmen === null) {
     return;
   }
   fragmen.render(docs);
@@ -50,8 +50,11 @@ let loadSource;
 const fsPath = './shaders/fs/fsMain.js';
 loadSource = await fetchShader(fsPath);
 
+
+
+
 /* -- set layout */
-const editorsWrap = document.createElement('div');
+const editorsWrap = document.createElement('main');
 editorsWrap.id = 'wrap';
 editorsWrap.style.position = 'relative';
 editorsWrap.style.display = 'grid';
@@ -91,6 +94,7 @@ container.appendChild(canvasDiv);
 container.appendChild(editorsWrap);
 document.body.appendChild(container);
 
+
 const extensions = [...initExtensions, updateCallback];
 const state = EditorState.create({
   doc: loadSource,
@@ -109,3 +113,29 @@ fragmen.onBuild((status, msg) => {
 });
 fragmen.mode = currentMode;
 fragmen.render(loadSource);
+
+
+function visualViewportHandler() {
+/*
+  if (editor.hasFocus) {
+    accessoryDiv.style.display = 'grid';
+    // document.body.style.backgroundColor = 'blue';
+  } else {
+    accessoryDiv.style.display = 'none';
+    //document.body.style.backgroundColor = 'yellow';
+  }
+*/
+  const upBottom =
+    window.innerHeight -
+    visualViewport.height +
+    visualViewport.offsetTop -
+    visualViewport.pageTop;
+
+  const editorDivHeight = editorsWrap.offsetHeight - statusLogDiv.offsetHeight;
+
+  statusLogDiv.style.bottom = `${upBottom}px`;
+  editorDiv.style.height = `${editorDivHeight}px`;
+}
+
+visualViewport.addEventListener('scroll', visualViewportHandler);
+visualViewport.addEventListener('resize', visualViewportHandler);

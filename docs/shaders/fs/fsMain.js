@@ -5,7 +5,7 @@ uniform vec2 mouse;
 uniform float time;
 uniform sampler2D backbuffer;
 
-out vec4 outColor;
+//out vec4 outColor;
 
 float plot(vec2 st) {
   return smoothstep(0.01, 0.0, abs(st.y - st.x));
@@ -22,5 +22,6 @@ void main(){
   float line = pct * abs(tan(time));
   vec3 color = vec3(uv, line); 
   // outColor = vec4(p.xxy, 1.0);
-  outColor = vec4(color, 1.0);
+  //outColor = vec4(color, 1.0);
+  gl_FragColor = vec4(color, 1.0);
 }
