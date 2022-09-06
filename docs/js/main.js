@@ -115,6 +115,7 @@ const buttonArea = document.createElement('div');
 buttonArea.id = 'buttonArea-div';
 buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
+buttonArea.style.display = 'none';
 
 const [
   commentButton,
@@ -170,28 +171,47 @@ fragmen.onBuild((status, msg) => {
 fragmen.mode = currentMode;
 fragmen.render(loadSource);
 
+const hasTouchScreen = () => {
+  if (navigator.maxTouchPoints > 0) {
+    return true;
+  }
+  if (navigator.msMaxTouchPoints > 0) {
+    return true;
+  }
+  if (window.matchMedia('(pointer:coarse)').matches) {
+    return true;
+  }
+  if ('orientation' in window) {
+    return true;
+  }
+
+  return false;
+};
+
+const isTouch = hasTouchScreen();
+
 function visualViewportHandler() {
-  /*
   if (editor.hasFocus) {
-    accessoryDiv.style.display = 'grid';
+    buttonArea.style.display = 'flex';
     // document.body.style.backgroundColor = 'blue';
   } else {
-    accessoryDiv.style.display = 'none';
+    buttonArea.style.display = 'none';
     //document.body.style.backgroundColor = 'yellow';
   }
-*/
+
   const upBottom =
     window.innerHeight -
     visualViewport.height +
     visualViewport.offsetTop -
     visualViewport.pageTop;
 
-  const editorDivHeight = screenDiv.offsetHeight - accessoryDiv.offsetHeight;
+  //const editorDivHeight = screenDiv.offsetHeight - accessoryDiv.offsetHeight;
 
-  //statusLogDiv.style.bottom = `${upBottom}px`;
   accessoryDiv.style.bottom = `${upBottom}px`;
-  editorDiv.style.height = `${editorDivHeight}px`;
+  //editorDiv.style.height = `${editorDivHeight}px`;
 }
 
-visualViewport.addEventListener('scroll', visualViewportHandler);
-visualViewport.addEventListener('resize', visualViewportHandler);
+if (isTouch) {
+  visualViewport.addEventListener('scroll', visualViewportHandler);
+  visualViewport.addEventListener('resize', visualViewportHandler);
+}
