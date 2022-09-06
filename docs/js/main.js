@@ -90,7 +90,8 @@ screenDiv.style.overflow = 'auto';
 
 const accessoryDiv = document.createElement('div');
 accessoryDiv.id = 'accessory-div';
-accessoryDiv.style.padding = '0.2rem';
+// accessoryDiv.style.padding = '0.5rem';
+accessoryDiv.style.margin = '0.5rem';
 accessoryDiv.style.backgroundColor = '#1c1c1e80'; // Gray6
 // todo: 常に下部に表示
 accessoryDiv.style.position = 'sticky';
@@ -101,21 +102,27 @@ statusLogDiv.id = 'statusLog-div';
 statusLogDiv.style.minHeight = '1.8rem';
 // テキストの上下センター表示
 statusLogDiv.style.display = 'flex';
+statusLogDiv.style.justifyContent = 'space-between';
 statusLogDiv.style.alignItems = 'center';
+statusLogDiv.style.fontSize = '0.64rem';
+statusLogDiv.style.fontFamily =
+  'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 
 const logText = document.createElement('p');
 logText.id = 'logText-p';
+// logText.style.fontSize = '0.64rem';
 // const logText = document.createElement('span');
 //logText.style.margin = '1rem';
-logText.style.fontSize = '0.64rem';
 // xxx: fontFamily でサイズが変わる
-logText.style.fontFamily =
-  'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
+// logText.style.fontFamily =
+//   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
 const buttonArea = document.createElement('div');
 buttonArea.id = 'buttonArea-div';
+// buttonArea.style.margin = '1rem';
+// buttonArea.style.padding = '1rem';
 buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
 buttonArea.style.display = 'none';
@@ -136,7 +143,38 @@ const [
   buttonArea.appendChild(ele);
   return ele;
 });
-accessoryDiv.appendChild(statusLogDiv).appendChild(logText);
+
+const modeOptions = [
+  'classic',
+  'geek',
+  'geeker',
+  'geekest',
+  'classic (300 es)',
+  'geek (300 es)',
+  'geeker (300 es)',
+  'geekest (300 es)',
+  'classic (MRT)',
+  'geek (MRT)',
+  'geeker (MRT)',
+  'geekest (MRT)',
+];
+const modeSelect = document.createElement('select');
+modeSelect.id = 'mode-select';
+modeSelect.style.background = '#1c1c1e80';
+// modeSelect.style.borderRadius = btnRadius;
+modeOptions.forEach((option, index) => {
+  const optionElement = document.createElement('option');
+  optionElement.value = index;
+  optionElement.text = option;
+  if ([0, 4].includes(index)) {
+    modeSelect.appendChild(optionElement);
+  }
+});
+
+statusLogDiv.appendChild(logText);
+statusLogDiv.appendChild(modeSelect);
+
+accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
 screenDiv.appendChild(editorDiv);
 screenDiv.appendChild(accessoryDiv);
@@ -191,27 +229,23 @@ const hasTouchScreen = () => {
   return false;
 };
 
-const isTouch = hasTouchScreen();
-
 function visualViewportHandler() {
-  if (editor.hasFocus) {
-    buttonArea.style.display = 'flex';
-    // document.body.style.backgroundColor = 'blue';
-  } else {
-    buttonArea.style.display = 'none';
-    //document.body.style.backgroundColor = 'yellow';
-  }
-
+  buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
   const upBottom =
     window.innerHeight -
     visualViewport.height +
     visualViewport.offsetTop -
     visualViewport.pageTop;
-
   //const editorDivHeight = screenDiv.offsetHeight - accessoryDiv.offsetHeight;
-
   accessoryDiv.style.bottom = `${upBottom}px`;
   //editorDiv.style.height = `${editorDivHeight}px`;
+}
+
+function moveCaret(pos) {
+  editor.dispatch({
+    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
+  });
+  editor.focus();
 }
 
 if (hasTouchScreen()) {
@@ -234,7 +268,64 @@ if (hasTouchScreen()) {
     editor.dispatch(transaction);
     editor.focus();
   });
+  let caret = 0;
+  let headLine;
+  let endLine;
+  let startX = 0;
+  let endX = 0;
+  function statusLogDivSwipeStart(event) {
+    caret = editor.state.selection.main;
+    headLine = editor.moveToLineBoundary(caret, 0);
+    endLine = editor.moveToLineBoundary(caret, 1);
+    // todo: mobile しか想定していないけども
+    startX = event.touches ? event.touches[0].pageX : event.pageX;
+  }
+
+  function statusLogDivSwipeMove(event) {
+    event.preventDefault();
+    // todo: mobile しか想定していないけども
+    // xxx: ドラッグでの移動
+    endX = event.touches ? event.touches[0].pageX : event.pageX;
+    const moveDistance = Math.round((endX - startX) / 10);
+    const forecast = caret + moveDistance;
+    let cursor;
+    if (forecast < headLine) {
+      cursor = headLine;
+    } else if (forecast > endLine) {
+      cursor = endLine;
+    } else {
+      cursor = forecast;
+    }
+    startX = endX;
+    // caret += moveDistance;
+    // const cursor = caret >= 0 ? caret : 0;
+    // logParagraph.textContent = `${cursor}: ${moveDistance}`;
+    moveCaret(cursor);
+  }
+  statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
+  statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
 }
 
-// const lineHead = editor.moveToLineBoundary(range, 0)
-// const lineEnd = editor.moveToLineBoundary(range, 1)
+/*
+// モード変更時の処理 まだ実装しない
+modeSelect.addEventListener(
+  'change',
+  () => {
+    const defaultSourceInPrevMode = fragmenDefaultSource[currentMode];
+
+    const source = editor.textContent;
+    currentMode = parseInt(modeSelect.value);
+    fragmen.mode = currentMode;
+
+    // 既定のソースと同じならモードに応じた既定のソースに書き換える
+    if (source === defaultSourceInPrevMode) {
+      const defaultSource = fragmenDefaultSource[currentMode];
+      editor.textContent = defaultSource;
+    } else {
+      // ソースを置き換えないとしてもビルドはしなおす
+      update(editor.textContent);
+    }
+  },
+  false
+);
+*/
