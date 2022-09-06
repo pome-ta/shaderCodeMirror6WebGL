@@ -110,9 +110,8 @@ logText.style.fontFamily =
 logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
-
 const buttonArea = document.createElement('div');
-buttonArea.id = 'buttonArea-div'
+buttonArea.id = 'buttonArea-div';
 buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
 
@@ -127,28 +126,15 @@ const [
   selectAllButton,
   redoButton,
   undoButton,
-] = [
-  '//',
-  '⇥',
-  '=',
-  ',',
-  ';',
-  '↼',
-  '⇀',
-  '⎁',
-  '⤻',
-  '⤺',
-].map((str) => {
+] = ['//', '⇥', '=', ',', ';', '↼', '⇀', '⎁', '⤻', '⤺'].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;
 });
-accessoryDiv.appendChild(buttonArea)
+accessoryDiv.appendChild(statusLogDiv).appendChild(logText);
+accessoryDiv.appendChild(buttonArea);
 screenDiv.appendChild(editorDiv);
-screenDiv
-  .appendChild(statusLogDiv)
-  .appendChild(logText);
-screenDiv.appendChild(accessoryDiv)
+screenDiv.appendChild(accessoryDiv);
 
 /* -- main */
 const container = document.createElement('main');
