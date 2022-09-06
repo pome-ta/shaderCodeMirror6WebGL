@@ -105,6 +105,7 @@ logText.id = 'logText-p';
 // const logText = document.createElement('span');
 //logText.style.margin = '1rem';
 logText.style.fontSize = '0.64rem';
+// xxx: fontFamily でサイズが変わる
 logText.style.fontFamily =
   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 logText.textContent = ' ● ready';
