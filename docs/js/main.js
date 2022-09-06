@@ -27,12 +27,6 @@ function onChange(docs) {
     return;
   }
   fragmen.render(docs);
-  /*
-  try {
-    fragmen.render(docs);
-  } catch {}
-  // editor.destroy();
-  */
 }
 
 const logSuccessColor = '#1da1f2';
@@ -50,9 +44,6 @@ let loadSource;
 const fsPath = './shaders/fs/fsMain.js';
 loadSource = await fetchShader(fsPath);
 
-
-
-
 /* -- set layout */
 const editorsWrap = document.createElement('main');
 editorsWrap.id = 'wrap';
@@ -63,7 +54,8 @@ editorsWrap.style.height = '100%';
 editorDiv.style.overflow = 'auto';
 
 const statusLogDiv = document.createElement('div');
-statusLogDiv.style.height = '2rem';
+statusLogDiv.style.minHeight = '2rem';
+//statusLogDiv.style.Height = '2rem';
 // statusLogDiv.style.backgroundColor = '#111';
 // todo: 常に下部に表示
 statusLogDiv.style.position = 'sticky';
@@ -74,7 +66,7 @@ statusLogDiv.style.alignItems = 'center';
 
 const logText = document.createElement('p');
 // const logText = document.createElement('span');
-logText.style.margin = '0 1rem';
+logText.style.margin = '1rem';
 logText.style.fontSize = '0.8rem';
 logText.style.fontFamily =
   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
@@ -93,7 +85,6 @@ container.style.height = '100%';
 container.appendChild(canvasDiv);
 container.appendChild(editorsWrap);
 document.body.appendChild(container);
-
 
 const extensions = [...initExtensions, updateCallback];
 const state = EditorState.create({
@@ -114,9 +105,8 @@ fragmen.onBuild((status, msg) => {
 fragmen.mode = currentMode;
 fragmen.render(loadSource);
 
-
 function visualViewportHandler() {
-/*
+  /*
   if (editor.hasFocus) {
     accessoryDiv.style.display = 'grid';
     // document.body.style.backgroundColor = 'blue';
