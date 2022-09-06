@@ -39,51 +39,57 @@ const logColor = {
   error: logErrorColor,
 };
 
-/* -- loadSource */
-let loadSource;
-const fsPath = './shaders/fs/fsMain.js';
-loadSource = await fetchShader(fsPath);
-
 /* -- set layout */
-const editorsWrap = document.createElement('main');
-editorsWrap.id = 'wrap';
-editorsWrap.style.position = 'relative';
-editorsWrap.style.display = 'grid';
-editorsWrap.style.gridTemplateRows = '1fr auto';
-editorsWrap.style.height = '100%';
-editorDiv.style.overflow = 'auto';
+const screenDiv = document.createElement('div');
+screenDiv.id = 'screen-wrap';
+screenDiv.style.position = 'relative';
+screenDiv.style.display = 'grid';
+screenDiv.style.gridTemplateRows = '1fr auto';
+screenDiv.style.height = '100%';
+screenDiv.style.overflow = 'auto';
+
+const accessoryDiv = document.createElement('div');
+accessoryDiv.id = 'accessory-div';
+accessoryDiv.style.padding = '0.2rem';
+accessoryDiv.style.backgroundColor = '#1c1c1e80'; // Gray6
+// todo: 常に下部に表示
+accessoryDiv.style.position = 'sticky';
+accessoryDiv.style.bottom = 0;
 
 const statusLogDiv = document.createElement('div');
-statusLogDiv.style.minHeight = '2rem';
-//statusLogDiv.style.Height = '2rem';
-// statusLogDiv.style.backgroundColor = '#111';
-// todo: 常に下部に表示
-statusLogDiv.style.position = 'sticky';
-statusLogDiv.style.bottom = 0;
+statusLogDiv.id = 'statusLog-div';
+statusLogDiv.style.minHeight = '1.8rem';
 // テキストの上下センター表示
 statusLogDiv.style.display = 'flex';
 statusLogDiv.style.alignItems = 'center';
 
 const logText = document.createElement('p');
+logText.id = 'logText-p';
 // const logText = document.createElement('span');
-logText.style.margin = '1rem';
-logText.style.fontSize = '0.8rem';
+//logText.style.margin = '1rem';
+logText.style.fontSize = '0.64rem';
 logText.style.fontFamily =
   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
+accessoryDiv.appendChild(statusLogDiv);
 statusLogDiv.appendChild(logText);
-editorsWrap.appendChild(editorDiv);
-editorsWrap.appendChild(statusLogDiv);
+screenDiv.appendChild(editorDiv);
+screenDiv.appendChild(accessoryDiv);
+
+/* -- loadSource */
+let loadSource;
+const fsPath = './shaders/fs/fsMain.js';
+loadSource = await fetchShader(fsPath);
 
 /* -- main */
 const container = document.createElement('main');
-container.id = 'mainContainer';
+container.id = 'container-main';
 container.style.height = '100%';
 
 container.appendChild(canvasDiv);
-container.appendChild(editorsWrap);
+container.appendChild(screenDiv);
 document.body.appendChild(container);
 
 const extensions = [...initExtensions, updateCallback];
@@ -121,9 +127,10 @@ function visualViewportHandler() {
     visualViewport.offsetTop -
     visualViewport.pageTop;
 
-  const editorDivHeight = editorsWrap.offsetHeight - statusLogDiv.offsetHeight;
+  const editorDivHeight = screenDiv.offsetHeight - accessoryDiv.offsetHeight;
 
-  statusLogDiv.style.bottom = `${upBottom}px`;
+  //statusLogDiv.style.bottom = `${upBottom}px`;
+  accessoryDiv.style.bottom = `${upBottom}px`;
   editorDiv.style.height = `${editorDivHeight}px`;
 }
 

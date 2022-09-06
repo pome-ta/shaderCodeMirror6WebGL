@@ -1,6 +1,7 @@
 import { Fragmen } from './fragmen.js';
 
 const canvasDiv = document.createElement('div');
+canvasDiv.id = 'canvas-div';
 canvasDiv.style.width = '100%';
 canvasDiv.style.height = '100%';
 

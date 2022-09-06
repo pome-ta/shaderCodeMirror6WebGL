@@ -16711,30 +16711,19 @@ const minimalSetup = /*@__PURE__*/(() => [
     ])
 ])();
 
-const createDiv = (idName) => {
-  const ele = document.createElement('div');
-  if (idName) {
-    ele.id = idName;
-  }
-  ele.style.width = '100%';
-  return ele;
-};
-const editorDiv = createDiv('editorMain');
+const editorDiv = document.createElement('div');
+editorDiv.id = 'editor-div';
+editorDiv.style.width = '100%';
 
-let myTheme = EditorView.theme(
-  {
-    '&': {
-      //color: 'white',
-      //backgroundColor: '#00000000',
-      fontSize: '0.8rem',
-    },
-    '.cm-scroller': {
-      fontFamily:
-        'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
-    },
-  }
-  //{ dark: true }
-);
+let myTheme = EditorView.theme({
+  '&': {
+    fontSize: '0.8rem',
+  },
+  '.cm-scroller': {
+    fontFamily:
+      'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace',
+  },
+});
 
 const tabSize = new Compartment();
 
