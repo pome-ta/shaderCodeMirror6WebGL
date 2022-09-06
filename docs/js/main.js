@@ -47,7 +47,8 @@ const btnRadius = '16%';
 
 function _createButtonWrap(width, height) {
   const wrap = document.createElement('div');
-  wrap.style.width = width;
+  // xxx: 最大数問題
+  wrap.style.minWidth = width;
   wrap.style.height = height;
   wrap.style.display = 'flex';
   wrap.style.justifyContent = 'center';
@@ -90,8 +91,8 @@ screenDiv.style.overflow = 'auto';
 
 const accessoryDiv = document.createElement('div');
 accessoryDiv.id = 'accessory-div';
-// accessoryDiv.style.padding = '0.5rem';
-accessoryDiv.style.margin = '0.5rem';
+accessoryDiv.style.padding = '0.5rem';
+//accessoryDiv.style.margin = '0.5rem';
 accessoryDiv.style.backgroundColor = '#1c1c1e80'; // Gray6
 // todo: 常に下部に表示
 accessoryDiv.style.position = 'sticky';
@@ -121,24 +122,19 @@ logText.style.color = logColor['warn'];
 
 const buttonArea = document.createElement('div');
 buttonArea.id = 'buttonArea-div';
-// buttonArea.style.margin = '1rem';
-// buttonArea.style.padding = '1rem';
+//buttonArea.style.margin = '0.5rem 0';
+//buttonArea.style.padding = '0.5rem 0';
 buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
 buttonArea.style.display = 'none';
 
-const [
-  commentButton,
-  tabButton,
-  equalButton,
-  commaButton,
-  semicolonButton,
-  leftButton,
-  rightButton,
-  selectAllButton,
-  redoButton,
-  undoButton,
-] = ['//', '⇥', '=', ',', ';', '↼', '⇀', '⎁', '⤻', '⤺'].map((str) => {
+const [rightButton, selectAllButton, redoButton, undoButton] = [
+  '↼',
+  '⇀',
+  '⎁',
+  '⤻',
+  '⤺',
+].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;
@@ -268,15 +264,14 @@ if (hasTouchScreen()) {
     editor.dispatch(transaction);
     editor.focus();
   });
-  let caret = 0;
-  let headLine;
-  let endLine;
+  let caret, headLine, endLine;
   let startX = 0;
   let endX = 0;
   function statusLogDivSwipeStart(event) {
-    caret = editor.state.selection.main;
-    headLine = editor.moveToLineBoundary(caret, 0);
-    endLine = editor.moveToLineBoundary(caret, 1);
+    const selectionMain = editor.state.selection.main;
+    caret = selectionMain.anchor;
+    headLine = editor.moveToLineBoundary(selectionMain, 0).anchor;
+    endLine = editor.moveToLineBoundary(selectionMain, 1).anchor;
     // todo: mobile しか想定していないけども
     startX = event.touches ? event.touches[0].pageX : event.pageX;
   }
@@ -287,20 +282,16 @@ if (hasTouchScreen()) {
     // xxx: ドラッグでの移動
     endX = event.touches ? event.touches[0].pageX : event.pageX;
     const moveDistance = Math.round((endX - startX) / 10);
-    const forecast = caret + moveDistance;
-    let cursor;
-    if (forecast < headLine) {
-      cursor = headLine;
-    } else if (forecast > endLine) {
-      cursor = endLine;
-    } else {
-      cursor = forecast;
+
+    caret += moveDistance;
+    if (caret < headLine) {
+      caret = headLine;
+    } else if (caret >= endLine) {
+      caret = endLine;
     }
+
     startX = endX;
-    // caret += moveDistance;
-    // const cursor = caret >= 0 ? caret : 0;
-    // logParagraph.textContent = `${cursor}: ${moveDistance}`;
-    moveCaret(cursor);
+    moveCaret(caret);
   }
   statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
   statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
