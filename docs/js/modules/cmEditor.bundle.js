@@ -16737,4 +16737,4 @@ const initExtensions = [
   myTheme,
 ];
 
-export { EditorState, EditorView, editorDiv, initExtensions };
+export { EditorSelection, EditorState, EditorView, editorDiv, initExtensions, redo, undo };

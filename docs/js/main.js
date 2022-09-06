@@ -1,6 +1,9 @@
 import {
   EditorView,
   EditorState,
+  EditorSelection,
+  undo,
+  redo,
   initExtensions,
   editorDiv,
 } from './modules/cmEditor.bundle.js';
@@ -211,7 +214,27 @@ function visualViewportHandler() {
   //editorDiv.style.height = `${editorDivHeight}px`;
 }
 
-if (isTouch) {
+if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
+  undoButton.addEventListener('click', () => {
+    undo(editor);
+    editor.focus();
+  });
+
+  redoButton.addEventListener('click', () => {
+    redo(editor);
+    editor.focus();
+  });
+  selectAllButton.addEventListener('click', () => {
+    const endRange = editor.state.doc.length;
+    const transaction = {
+      selection: EditorSelection.create([EditorSelection.range(0, endRange)]),
+    };
+    editor.dispatch(transaction);
+    editor.focus();
+  });
 }
+
+// const lineHead = editor.moveToLineBoundary(range, 0)
+// const lineEnd = editor.moveToLineBoundary(range, 1)

@@ -1,11 +1,12 @@
 import { EditorView, minimalSetup } from 'codemirror';
 
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState, EditorSelection, Compartment } from '@codemirror/state';
 import {
   lineNumbers,
   highlightActiveLineGutter,
   highlightActiveLine,
 } from '@codemirror/view';
+import { undo, redo } from '@codemirror/commands';
 
 const editorDiv = document.createElement('div');
 editorDiv.id = 'editor-div';
@@ -33,4 +34,12 @@ const initExtensions = [
   myTheme,
 ];
 
-export { EditorView, EditorState, initExtensions, editorDiv };
+export {
+  EditorView,
+  EditorState,
+  EditorSelection,
+  undo,
+  redo,
+  initExtensions,
+  editorDiv,
+};
