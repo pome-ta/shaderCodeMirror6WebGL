@@ -39,6 +39,43 @@ const logColor = {
   error: logErrorColor,
 };
 
+const btnW = '2.5rem';
+const btnRadius = '16%';
+
+function _createButtonWrap(width, height) {
+  const wrap = document.createElement('div');
+  wrap.style.width = width;
+  wrap.style.height = height;
+  wrap.style.display = 'flex';
+  wrap.style.justifyContent = 'center';
+  wrap.style.alignItems = 'center';
+  return wrap;
+}
+
+function createIcon(char) {
+  const icon = document.createElement('span');
+  icon.textContent = char;
+  icon.style.fontSize = '1.2rem';
+  //icon.style.fontWeight = 900;
+  // icon.style.color = '#fefefe';
+  icon.style.color = '#f2f2f7'; // gray6
+  return icon;
+}
+
+function createActionButton(iconChar) {
+  const wrap = _createButtonWrap(btnW, '100%');
+  const button = _createButtonWrap('90%', '90%');
+  const icon = createIcon(iconChar);
+  wrap.appendChild(button);
+  wrap.style.cursor = 'pointer';
+  button.style.borderRadius = btnRadius;
+  // button.style.backgroundColor = '#ababab';
+  button.style.backgroundColor = '#8e8e93'; // light gray
+  button.style.filter = 'drop-shadow(2px 2px 2px rgba(28, 28, 30, 0.9))';
+  button.appendChild(icon);
+  return wrap;
+}
+
 /* -- set layout */
 const screenDiv = document.createElement('div');
 screenDiv.id = 'screen-wrap';
@@ -73,15 +110,45 @@ logText.style.fontFamily =
 logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
-accessoryDiv.appendChild(statusLogDiv);
-statusLogDiv.appendChild(logText);
-screenDiv.appendChild(editorDiv);
-screenDiv.appendChild(accessoryDiv);
 
-/* -- loadSource */
-let loadSource;
-const fsPath = './shaders/fs/fsMain.js';
-loadSource = await fetchShader(fsPath);
+const buttonArea = document.createElement('div');
+buttonArea.id = 'buttonArea-div'
+buttonArea.style.display = 'flex';
+buttonArea.style.justifyContent = 'space-around';
+
+const [
+  commentButton,
+  tabButton,
+  equalButton,
+  commaButton,
+  semicolonButton,
+  leftButton,
+  rightButton,
+  selectAllButton,
+  redoButton,
+  undoButton,
+] = [
+  '//',
+  '⇥',
+  '=',
+  ',',
+  ';',
+  '↼',
+  '⇀',
+  '⎁',
+  '⤻',
+  '⤺',
+].map((str) => {
+  const ele = createActionButton(str);
+  buttonArea.appendChild(ele);
+  return ele;
+});
+accessoryDiv.appendChild(buttonArea)
+screenDiv.appendChild(editorDiv);
+screenDiv
+  .appendChild(statusLogDiv)
+  .appendChild(logText);
+screenDiv.appendChild(accessoryDiv)
 
 /* -- main */
 const container = document.createElement('main');
@@ -91,6 +158,11 @@ container.style.height = '100%';
 container.appendChild(canvasDiv);
 container.appendChild(screenDiv);
 document.body.appendChild(container);
+
+/* -- loadSource */
+let loadSource;
+const fsPath = './shaders/fs/fsMain.js';
+loadSource = await fetchShader(fsPath);
 
 const extensions = [...initExtensions, updateCallback];
 const state = EditorState.create({
