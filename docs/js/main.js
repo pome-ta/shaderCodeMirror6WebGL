@@ -247,6 +247,7 @@ function moveCaret(pos) {
 if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
+  
   undoButton.addEventListener('click', () => {
     undo(editor);
     editor.focus();
@@ -256,6 +257,7 @@ if (hasTouchScreen()) {
     redo(editor);
     editor.focus();
   });
+  
   selectAllButton.addEventListener('click', () => {
     const endRange = editor.state.doc.length;
     const transaction = {
@@ -264,6 +266,7 @@ if (hasTouchScreen()) {
     editor.dispatch(transaction);
     editor.focus();
   });
+  
   let caret, headLine, endLine;
   let startX = 0;
   let endX = 0;
@@ -320,3 +323,4 @@ modeSelect.addEventListener(
   false
 );
 */
+
