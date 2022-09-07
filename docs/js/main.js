@@ -312,6 +312,20 @@ if (hasTouchScreen()) {
     caret += 1;
     moveCaret(caret);
   });
+  
+  upButton.addEventListener('click', () => {
+    const selectionMain = editor.state.selection.main;
+    const m = editor.moveVertically(selectionMain, 1,-1)
+    const n = editor.moveVertically(selectionMain, 1)
+    const b = editor.moveToLineBoundary(selectionMain, 1)
+    console.log(m)
+    console.log(n)
+    console.log(b)
+    
+    caret = editor.state.selection.main.anchor;
+    caret -= 1;
+    moveCaret(caret);
+  });
 }
 
 /*
