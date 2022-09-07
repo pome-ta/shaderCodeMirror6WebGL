@@ -48,6 +48,11 @@ function onChange(docs) {
   fragmen.render(docs);
 }
 
+/* -- main */
+const container = document.createElement('main');
+container.id = 'container-main';
+container.style.height = '100%';
+
 statusLogDiv.appendChild(logText);
 statusLogDiv.appendChild(modeSelect);
 
@@ -55,11 +60,6 @@ accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
 screenDiv.appendChild(editorDiv);
 screenDiv.appendChild(accessoryDiv);
-
-/* -- main */
-const container = document.createElement('main');
-container.id = 'container-main';
-container.style.height = '100%';
 
 container.appendChild(canvasDiv);
 container.appendChild(screenDiv);
@@ -194,7 +194,7 @@ if (hasTouchScreen()) {
 
   rightButton.addEventListener('click', () => {
     const docLength = editor.state.doc.length;
-    caret = editor.state.selection.main.anchor;
+    caret = editor.state.selection.main.head;
     caret += 1;
     caret = caret < docLength ? caret : docLength;
 
