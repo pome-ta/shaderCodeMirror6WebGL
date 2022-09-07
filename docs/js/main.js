@@ -160,7 +160,6 @@ const modeOptions = [
 const modeSelect = document.createElement('select');
 modeSelect.id = 'mode-select';
 modeSelect.style.background = '#1c1c1e80';
-// modeSelect.style.borderRadius = btnRadius;
 modeOptions.forEach((option, index) => {
   const optionElement = document.createElement('option');
   optionElement.value = index;
@@ -301,6 +300,18 @@ if (hasTouchScreen()) {
   }
   statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
   statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
+
+  leftButton.addEventListener('click', () => {
+    caret = editor.state.selection.main.anchor;
+    caret -= 1;
+    moveCaret(caret);
+  });
+
+  rightButton.addEventListener('click', () => {
+    caret = editor.state.selection.main.anchor;
+    caret += 1;
+    moveCaret(caret);
+  });
 }
 
 /*
