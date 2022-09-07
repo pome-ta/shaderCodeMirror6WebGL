@@ -130,8 +130,7 @@ function moveCaret(pos) {
   editor.focus();
 }
 
-// if (hasTouchScreen()) {
-if (true) {
+if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
 
@@ -189,12 +188,16 @@ if (true) {
   leftButton.addEventListener('click', () => {
     caret = editor.state.selection.main.anchor;
     caret -= 1;
+    caret = caret > 0 ? caret : 0;
     moveCaret(caret);
   });
 
   rightButton.addEventListener('click', () => {
+    const docLength = editor.state.doc.length;
     caret = editor.state.selection.main.anchor;
     caret += 1;
+    caret = caret < docLength ? caret : docLength;
+
     moveCaret(caret);
   });
 
