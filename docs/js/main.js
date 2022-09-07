@@ -239,6 +239,11 @@ function visualViewportHandler() {
   //editorDiv.style.height = `${editorDivHeight}px`;
 }
 
+modeSelect.addEventListener('change', () => {
+  fragmen.mode = parseInt(modeSelect.value);
+  onChange(editor.state.doc.toString());
+});
+
 function moveCaret(pos) {
   editor.dispatch({
     selection: EditorSelection.create([EditorSelection.cursor(pos)]),
@@ -312,18 +317,22 @@ if (hasTouchScreen()) {
     caret += 1;
     moveCaret(caret);
   });
-  
-  upButton.addEventListener('click', () => {
+
+  /**
+   * caret行の上下操作
+   * @param {Boolean} forward - 0=flase=上, 1=true=下
+   * @returns number - 移動先のcaret
+   */
+  function moveUpDownCaret(forward) {
     const selectionMain = editor.state.selection.main;
-    const m = editor.moveVertically(selectionMain, 1,-1)
-    const n = editor.moveVertically(selectionMain, 1)
-    const b = editor.moveToLineBoundary(selectionMain, 1)
-    console.log(m)
-    console.log(n)
-    console.log(b)
-    
-    caret = editor.state.selection.main.anchor;
-    caret -= 1;
+    return editor.moveVertically(selectionMain, forward).anchor;
+  }
+  upButton.addEventListener('click', () => {
+    caret = moveUpDownCaret(0);
+    moveCaret(caret);
+  });
+  downButton.addEventListener('click', () => {
+    caret = moveUpDownCaret(1);
     moveCaret(caret);
   });
 }
