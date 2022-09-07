@@ -128,13 +128,16 @@ buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
 buttonArea.style.display = 'none';
 
-const [rightButton, selectAllButton, redoButton, undoButton] = [
-  '↼',
-  '⇀',
-  '⎁',
-  '⤻',
-  '⤺',
-].map((str) => {
+const [
+  commentButton,
+  leftButton,
+  upButton,
+  downButton,
+  rightButton,
+  selectAllButton,
+  redoButton,
+  undoButton,
+] = ['//', '←', '↑', '↓', '→', '⎁', '⤻', '⤺'].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;
@@ -247,7 +250,7 @@ function moveCaret(pos) {
 if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
-  
+
   undoButton.addEventListener('click', () => {
     undo(editor);
     editor.focus();
@@ -257,7 +260,7 @@ if (hasTouchScreen()) {
     redo(editor);
     editor.focus();
   });
-  
+
   selectAllButton.addEventListener('click', () => {
     const endRange = editor.state.doc.length;
     const transaction = {
@@ -266,7 +269,7 @@ if (hasTouchScreen()) {
     editor.dispatch(transaction);
     editor.focus();
   });
-  
+
   let caret, headLine, endLine;
   let startX = 0;
   let endX = 0;
@@ -323,4 +326,3 @@ modeSelect.addEventListener(
   false
 );
 */
-
