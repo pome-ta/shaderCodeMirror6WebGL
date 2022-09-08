@@ -21,9 +21,7 @@ function _createButtonWrap(width, height) {
 function createIcon(char) {
   const icon = document.createElement('span');
   icon.textContent = char;
-  icon.style.fontSize = '1.2rem';
-  //icon.style.fontWeight = 900;
-  // icon.style.color = '#fefefe';
+  icon.style.fontSize = '1.0rem';
   icon.style.color = '#f2f2f7'; // gray6
   return icon;
 }
@@ -86,7 +84,6 @@ buttonArea.style.display = 'none';
 const [
   commentButton,
   leftButton,
-
   downButton,
   upButton,
   rightButton,

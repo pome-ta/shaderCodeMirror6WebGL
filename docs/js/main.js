@@ -204,6 +204,7 @@ if (hasTouchScreen()) {
     const selectionMain = editor.state.selection.main;
     return editor.moveVertically(selectionMain, forward).anchor;
   }
+  
   upButton.addEventListener('click', () => {
     caret = moveUpDownCaret(0);
     moveCaret(caret);
