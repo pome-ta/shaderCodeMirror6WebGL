@@ -48,6 +48,13 @@ function onChange(docs) {
   fragmen.render(docs);
 }
 
+function moveCaret(pos) {
+  editor.dispatch({
+    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
+  });
+  editor.focus();
+}
+
 /* -- main */
 const container = document.createElement('main');
 container.id = 'container-main';
@@ -113,22 +120,14 @@ function visualViewportHandler() {
     visualViewport.height +
     visualViewport.offsetTop -
     visualViewport.pageTop;
-  //const editorDivHeight = screenDiv.offsetHeight - accessoryDiv.offsetHeight;
+
   accessoryDiv.style.bottom = `${upBottom}px`;
-  //editorDiv.style.height = `${editorDivHeight}px`;
 }
 
 modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
   onChange(editor.state.doc.toString());
 });
-
-function moveCaret(pos) {
-  editor.dispatch({
-    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
-  });
-  editor.focus();
-}
 
 if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
@@ -161,17 +160,13 @@ if (hasTouchScreen()) {
     caret = selectionMain.anchor;
     headLine = editor.moveToLineBoundary(selectionMain, 0).anchor;
     endLine = editor.moveToLineBoundary(selectionMain, 1).anchor;
-    // todo: mobile しか想定していないけども
     startX = event.touches ? event.touches[0].pageX : event.pageX;
   }
 
   function statusLogDivSwipeMove(event) {
     event.preventDefault();
-    // todo: mobile しか想定していないけども
-    // xxx: ドラッグでの移動
     endX = event.touches ? event.touches[0].pageX : event.pageX;
-    const moveDistance = Math.round((endX - startX) / 10);
-
+    const moveDistance = Math.round((endX - startX) / 10); // xxx: スワイプでの移動距離数値
     caret += moveDistance;
     if (caret < headLine) {
       caret = headLine;
@@ -197,7 +192,6 @@ if (hasTouchScreen()) {
     caret = editor.state.selection.main.head;
     caret += 1;
     caret = caret < docLength ? caret : docLength;
-
     moveCaret(caret);
   });
 
