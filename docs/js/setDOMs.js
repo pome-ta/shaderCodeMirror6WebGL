@@ -59,6 +59,7 @@ accessoryDiv.style.bottom = 0;
 const statusLogDiv = document.createElement('div');
 statusLogDiv.id = 'statusLog-div';
 statusLogDiv.style.minHeight = '1.28rem';
+statusLogDiv.style.maxHeight = '2.4rem';
 // テキストの上下センター表示
 statusLogDiv.style.display = 'flex';
 statusLogDiv.style.justifyContent = 'space-between';
