@@ -6,6 +6,7 @@ import {
   modeSelect,
   accessoryDiv,
   buttonArea,
+  commentButton,
   undoButton,
   redoButton,
   selectAllButton,
@@ -18,6 +19,9 @@ import {
   EditorView,
   EditorState,
   EditorSelection,
+  StateField,
+  StateEffect,
+  Decoration,
   undo,
   redo,
   selectAll,
@@ -27,13 +31,13 @@ import {
   cursorCharRight,
   initExtensions,
   editorDiv,
+  toggleComment,
 } from './modules/cmEditor.bundle.js';
 import {
   Fragmen,
   canvasDiv,
   option,
   currentMode,
-  currentSource,
 } from './shaderCanvas/index.js';
 
 async function fetchShader(path) {
@@ -58,6 +62,66 @@ function moveCaret(pos) {
     selection: EditorSelection.create([EditorSelection.cursor(pos)]),
   });
   editor.focus();
+}
+
+const addBackgroundLine = StateEffect.define({
+  map: ({ from, to }, change) => ({
+    from: change.mapPos(from),
+    to: change.mapPos(to),
+  }),
+});
+const backgroundlineField = StateField.define({
+  create() {
+    return Decoration.none;
+  },
+  update(backgroundlines, tr) {
+    //console.log(underlines);
+    backgroundlines = backgroundlines.map(tr.changes);
+    for (let e of tr.effects)
+      if (e.is(addBackgroundLine)) {
+        backgroundlines = backgroundlines.update({
+          add: [backgroundlineMark.range(e.value.from, e.value.to)],
+        });
+      }
+    return backgroundlines;
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+const backgroundlineTheme = EditorView.baseTheme({
+  '.cm-backgroundline': { backgroundColor: '#23232380' },
+  '&.cm-editor': {
+    '&.cm-focused': {
+      // Provide a simple default outline to make sure a focused
+      // editor is visually distinct. Can't leave the default behavior
+      // because that will apply to the content element, which is
+      // inside the scrollable container and doesn't include the
+      // gutters. We also can't use an 'auto' outline, since those
+      // are, for some reason, drawn behind the element content, which
+      // will cause things like the active line background to cover
+      // the outline (#297).
+      outline: '0px dotted #212121',
+    },
+  },
+});
+const backgroundlineMark = Decoration.mark({ class: 'cm-backgroundline' });
+
+function backgroundlineSelection(view) {
+  const endRange = view.state.doc.length;
+  const ranges = [EditorSelection.range(0, endRange)];
+  let effects = ranges
+    .filter((r) => !r.empty)
+    .map(({ from, to }) => addBackgroundLine.of({ from, to }));
+  //console.log(effects);
+  if (!effects.length) {
+    return false;
+  }
+  if (!view.state.field(backgroundlineField, false)) {
+    effects.push(
+      StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
+    );
+  }
+  view.dispatch({ effects });
+  return true;
 }
 
 /* -- main */
@@ -92,6 +156,8 @@ const editor = new EditorView({
   state,
   parent: editorDiv,
 });
+
+backgroundlineSelection(editor);
 
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
@@ -134,8 +200,7 @@ modeSelect.addEventListener('change', () => {
   onChange(editor.state.doc.toString());
 });
 
-// if (hasTouchScreen()) {
-if (true) {
+if (hasTouchScreen()) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
 
@@ -191,18 +256,22 @@ if (true) {
   statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
 
   leftButton.addEventListener('click', () => {
-    caret = editor.state.selection.main.anchor;
-    caret -= 1;
-    caret = caret > 0 ? caret : 0;
-    moveCaret(caret);
+    cursorCharLeft(editor);
+    editor.focus();
+    // caret = editor.state.selection.main.anchor;
+    // caret -= 1;
+    // caret = caret > 0 ? caret : 0;
+    // moveCaret(caret);
   });
 
   rightButton.addEventListener('click', () => {
-    const docLength = editor.state.doc.length;
-    caret = editor.state.selection.main.head;
-    caret += 1;
-    caret = caret < docLength ? caret : docLength;
-    moveCaret(caret);
+    cursorCharRight(editor);
+    editor.focus();
+    // const docLength = editor.state.doc.length;
+    // caret = editor.state.selection.main.head;
+    // caret += 1;
+    // caret = caret < docLength ? caret : docLength;
+    // moveCaret(caret);
   });
 
   /**
@@ -216,11 +285,19 @@ if (true) {
   }
 
   upButton.addEventListener('click', () => {
-    caret = moveUpDownCaret(0);
-    moveCaret(caret);
+    cursorLineUp(editor);
+    editor.focus();
+    // caret = moveUpDownCaret(0);
+    // moveCaret(caret);
   });
   downButton.addEventListener('click', () => {
-    caret = moveUpDownCaret(1);
-    moveCaret(caret);
+    cursorLineDown(editor);
+    editor.focus();
+    // caret = moveUpDownCaret(1);
+    // moveCaret(caret);
+  });
+  commentButton.addEventListener('click', () => {
+    toggleComment(editor);
+    editor.focus();
   });
 }
