@@ -6,7 +6,15 @@ import {
   highlightActiveLineGutter,
   highlightActiveLine,
 } from '@codemirror/view';
-import { undo, redo } from '@codemirror/commands';
+import {
+  undo,
+  redo,
+  selectAll,
+  cursorLineUp,
+  cursorLineDown,
+  cursorCharLeft,
+  cursorCharRight,
+} from '@codemirror/commands';
 
 const editorDiv = document.createElement('div');
 editorDiv.id = 'editor-div';
@@ -40,6 +48,11 @@ export {
   EditorSelection,
   undo,
   redo,
+  selectAll,
+  cursorLineUp,
+  cursorLineDown,
+  cursorCharLeft,
+  cursorCharRight,
   initExtensions,
   editorDiv,
 };

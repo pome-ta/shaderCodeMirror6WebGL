@@ -20,6 +20,11 @@ import {
   EditorSelection,
   undo,
   redo,
+  selectAll,
+  cursorLineUp,
+  cursorLineDown,
+  cursorCharLeft,
+  cursorCharRight,
   initExtensions,
   editorDiv,
 } from './modules/cmEditor.bundle.js';
@@ -129,7 +134,8 @@ modeSelect.addEventListener('change', () => {
   onChange(editor.state.doc.toString());
 });
 
-if (hasTouchScreen()) {
+// if (hasTouchScreen()) {
+if (true) {
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
 
@@ -143,12 +149,16 @@ if (hasTouchScreen()) {
     editor.focus();
   });
 
+  // selectAllButton.addEventListener('click', () => {
+  //   const endRange = editor.state.doc.length;
+  //   const transaction = {
+  //     selection: EditorSelection.create([EditorSelection.range(0, endRange)]),
+  //   };
+  //   editor.dispatch(transaction);
+  //   editor.focus();
+  // });
   selectAllButton.addEventListener('click', () => {
-    const endRange = editor.state.doc.length;
-    const transaction = {
-      selection: EditorSelection.create([EditorSelection.range(0, endRange)]),
-    };
-    editor.dispatch(transaction);
+    selectAll(editor);
     editor.focus();
   });
 
@@ -204,7 +214,7 @@ if (hasTouchScreen()) {
     const selectionMain = editor.state.selection.main;
     return editor.moveVertically(selectionMain, forward).anchor;
   }
-  
+
   upButton.addEventListener('click', () => {
     caret = moveUpDownCaret(0);
     moveCaret(caret);

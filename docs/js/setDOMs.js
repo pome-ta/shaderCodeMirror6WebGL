@@ -79,7 +79,7 @@ buttonArea.id = 'buttonArea-div';
 buttonArea.style.padding = '0.2rem 0';
 buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
-buttonArea.style.display = 'none';
+// buttonArea.style.display = 'none';
 
 const [
   commentButton,
