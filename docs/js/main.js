@@ -143,7 +143,9 @@ document.body.appendChild(container);
 
 /* -- loadSource */
 let loadSource;
-const fsPath = './shaders/fs/fsMain.js';
+const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
+// xxx: 読み込み方法が雑
+const fsPath = currentMode ? fsPaths[1] : fsPaths[0];
 loadSource = await fetchShader(fsPath);
 
 const extensions = [...initExtensions, updateCallback];
@@ -194,7 +196,7 @@ function visualViewportHandler() {
 
   accessoryDiv.style.bottom = `${upBottom}px`;
 }
-
+modeSelect.value = currentMode;
 modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
   onChange(editor.state.doc.toString());
