@@ -52,6 +52,7 @@ function onChange(docs) {
   if (fragmen === null) {
     return;
   }
+  //backgroundlineSelection(editor);
   fragmen.render(sendSource(docs));
 }
 
@@ -258,7 +259,6 @@ if (hasTouchScreen()) {
     } else if (caret >= endLine) {
       caret = endLine;
     }
-
     startX = endX;
     moveCaret(caret);
   }
