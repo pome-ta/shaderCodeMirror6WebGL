@@ -68,6 +68,12 @@ document.addEventListener('keydown', () => {
 
 `Fragmen.MODE_CLASSIC` だと、検知する
 
+### 違う (2022/09/10)
+
+Win のChrome なら補足できてるから
+
+iOS とmacOS 側の問題かと
+
 
 
 ## `memo.md` を追加
