@@ -35,7 +35,7 @@ editorDiv.style.width = '100%';
 let myTheme = EditorView.theme(
   {
     '&': {
-      fontSize: '0.8rem',
+      fontSize: '0.72rem',
     },
     '.cm-scroller': {
       fontFamily:
