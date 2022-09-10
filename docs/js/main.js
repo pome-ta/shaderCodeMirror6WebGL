@@ -47,18 +47,12 @@ const updateCallback = EditorView.updateListener.of(
 // xxx: `fragman.js` で`#version 300 es` が付与されるため、ここで削除
 const sendSource = (doc) =>
   currentMode ? doc.replace(/^#version 300 es/, '') : doc;
+
 function onChange(docs) {
   if (fragmen === null) {
     return;
   }
   fragmen.render(sendSource(docs));
-}
-
-function moveCaret(pos) {
-  editor.dispatch({
-    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
-  });
-  editor.focus();
 }
 
 const addBackgroundLine = StateEffect.define({
@@ -72,7 +66,6 @@ const backgroundlineField = StateField.define({
     return Decoration.none;
   },
   update(backgroundlines, tr) {
-    //console.log(underlines);
     backgroundlines = backgroundlines.map(tr.changes);
     for (let e of tr.effects)
       if (e.is(addBackgroundLine)) {
@@ -108,7 +101,6 @@ function backgroundlineSelection(view) {
   let effects = ranges
     .filter((r) => !r.empty)
     .map(({ from, to }) => addBackgroundLine.of({ from, to }));
-  //console.log(effects);
   if (!effects.length) {
     return false;
   }
@@ -119,6 +111,13 @@ function backgroundlineSelection(view) {
   }
   view.dispatch({ effects });
   return true;
+}
+
+function moveCaret(pos) {
+  editor.dispatch({
+    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
+  });
+  editor.focus();
 }
 
 /* -- main */
