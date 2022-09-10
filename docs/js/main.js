@@ -1,5 +1,4 @@
 import {
-  logColor,
   screenDiv,
   statusLogDiv,
   logText,
@@ -128,6 +127,16 @@ function backgroundlineSelection(view) {
 const container = document.createElement('main');
 container.id = 'container-main';
 container.style.height = '100%';
+
+const darkBackground = '#21252b';
+//document.body.backgroundColor = darkBackground
+const logColor = {
+  success: '#1da1f2',
+  warn: 'orangered',
+  error: '#ff517b',
+};
+logText.textContent = ' ● ready';
+logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
 statusLogDiv.appendChild(modeSelect);

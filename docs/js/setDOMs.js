@@ -1,9 +1,3 @@
-const logColor = {
-  success: '#1da1f2',
-  warn: 'orangered',
-  error: '#ff517b',
-};
-
 const btnW = '2.5rem';
 const btnRadius = '16%';
 
@@ -58,8 +52,11 @@ accessoryDiv.style.bottom = 0;
 
 const statusLogDiv = document.createElement('div');
 statusLogDiv.id = 'statusLog-div';
-statusLogDiv.style.minHeight = '1.28rem';
-statusLogDiv.style.maxHeight = '2.4rem';
+statusLogDiv.style.height = '1.6rem';
+//statusLogDiv.style.minHeight = '1.28rem';
+//statusLogDiv.style.maxHeight = '2.4rem';
+statusLogDiv.style.overflow = 'hidden';
+statusLogDiv.style.textOverflow = 'ellipsis';
 // テキストの上下センター表示
 statusLogDiv.style.display = 'flex';
 statusLogDiv.style.justifyContent = 'space-between';
@@ -70,10 +67,8 @@ statusLogDiv.style.fontFamily =
 
 const logText = document.createElement('p');
 logText.id = 'logText-p';
-logText.style.margin = 0;
+logText.style.margin = 'auto 0';
 logText.style.padding = 0;
-logText.textContent = ' ● ready';
-logText.style.color = logColor['warn'];
 
 const buttonArea = document.createElement('div');
 buttonArea.id = 'buttonArea-div';
@@ -124,7 +119,6 @@ modeOptions.forEach((option, index) => {
 });
 
 export {
-  logColor,
   screenDiv,
   statusLogDiv,
   logText,
