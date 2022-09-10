@@ -32,12 +32,7 @@ import {
   editorDiv,
   toggleComment,
 } from './modules/cmEditor.bundle.js';
-import {
-  Fragmen,
-  canvasDiv,
-  option,
-  currentMode,
-} from './shaderCanvas/index.js';
+import { Fragmen, canvasDiv, option, initMode } from './shaderCanvas/index.js';
 
 async function fetchShader(path) {
   const res = await fetch(path);
@@ -49,11 +44,14 @@ const updateCallback = EditorView.updateListener.of(
   (update) => update.docChanged && onChange(update.state.doc.toString())
 );
 
+// xxx: `fragman.js` で`#version 300 es` が付与されるため、ここで削除
+const sendSource = (doc) =>
+  currentMode ? doc.replace(/^#version 300 es/, '') : doc;
 function onChange(docs) {
   if (fragmen === null) {
     return;
   }
-  fragmen.render(docs);
+  fragmen.render(sendSource(docs));
 }
 
 function moveCaret(pos) {
@@ -154,7 +152,7 @@ document.body.appendChild(container);
 let loadSource;
 const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
 // xxx: 読み込み方法が雑
-const fsPath = currentMode ? fsPaths[1] : fsPaths[0];
+const fsPath = initMode ? fsPaths[1] : fsPaths[0];
 loadSource = await fetchShader(fsPath);
 
 const extensions = [...initExtensions, updateCallback];
@@ -170,13 +168,14 @@ const editor = new EditorView({
 
 backgroundlineSelection(editor);
 
+let currentMode = initMode;
 const fragmen = new Fragmen(option);
 fragmen.onBuild((status, msg) => {
   logText.style.color = logColor[status];
   logText.textContent = msg;
 });
 fragmen.mode = currentMode;
-fragmen.render(loadSource);
+fragmen.render(sendSource(loadSource));
 
 const hasTouchScreen = () => {
   if (navigator.maxTouchPoints > 0) {
@@ -208,6 +207,7 @@ function visualViewportHandler() {
 modeSelect.value = currentMode;
 modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
+  currentMode = fragmen.mode;
   onChange(editor.state.doc.toString());
 });
 

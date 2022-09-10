@@ -10,8 +10,8 @@ canvasDiv.style.top = 0;
 canvasDiv.style.left = 0;
 canvasDiv.style.zIndex = 0;
 
-let currentMode = Fragmen.MODE_CLASSIC_300; // 現在の Fragmen モード
-//let currentMode = Fragmen.MODE_CLASSIC; // 現在の Fragmen モード
+let initMode = Fragmen.MODE_CLASSIC_300; // 現在の Fragmen モード
+//let initMode = Fragmen.MODE_CLASSIC; // 現在の Fragmen モード
 let currentSource = ''; // 直近のソースコード
 
 // fragmen.js 用のオプションの雛形
@@ -25,7 +25,7 @@ const FRAGMEN_OPTION = {
 };
 
 const fragmenDefaultSource = Fragmen.DEFAULT_SOURCE;
-currentSource = fragmenDefaultSource[currentMode];
+currentSource = fragmenDefaultSource[initMode];
 // メインとなる fragmen のインスタンス
 const option = Object.assign(FRAGMEN_OPTION, {
   target: canvasDiv,
@@ -46,4 +46,4 @@ canvasDiv.addEventListener('touchmove', (event) => {
   //event.preventDefault();
 });
 
-export { Fragmen, canvasDiv, option, currentMode, currentSource };
+export { Fragmen, canvasDiv, option, initMode };
