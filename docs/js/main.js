@@ -184,6 +184,7 @@ const editor = new EditorView({
 });
 
 backgroundlineSelection(editor);
+backgroundlineSelection(editor);
 
 let currentMode = initMode;
 const fragmen = new Fragmen(option);
