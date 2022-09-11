@@ -52,7 +52,7 @@ function onChange(docs) {
   if (fragmen === null) {
     return;
   }
-  //backgroundlineSelection(editor);
+  backgroundlineSelection(editor);
   fragmen.render(sendSource(docs));
 }
 
@@ -62,13 +62,20 @@ const addBackgroundLine = StateEffect.define({
     to: change.mapPos(to),
   }),
 });
+
 const backgroundlineField = StateField.define({
   create() {
     return Decoration.none;
   },
   update(backgroundlines, tr) {
-  //console.log(this);
+    console.log('tr');
+    console.log(tr);
+    //console.log(this);
+    console.log('base');
+    console.log(backgroundlines);
     backgroundlines = backgroundlines.map(tr.changes);
+    console.log('back');
+    console.log(backgroundlines);
     //console.log('c')
     //console.log(tr);
     //console.log(this);
@@ -84,7 +91,7 @@ const backgroundlineField = StateField.define({
         //console.log(backgroundlines);
       }
     }
-    //console.log(backgroundlines);
+    console.log(backgroundlines);
     return backgroundlines;
   },
   provide: (f) => EditorView.decorations.from(f),
@@ -115,19 +122,23 @@ function backgroundlineSelection(view) {
   let effects = ranges
     .filter((r) => !r.empty)
     .map(({ from, to }) => addBackgroundLine.of({ from, to }));
+  // console.log(effects);
   if (!effects.length) {
     return false;
   }
-  //console.log(effects)
-  //console.log(view.state.field(backgroundlineField, false))
+  // console.log(effects);
+  console.log(view.state.field(backgroundlineField, false));
   if (!view.state.field(backgroundlineField, false)) {
+    // if (true) {
+    console.log('hgoe');
     effects.push(
       StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
     );
   }
-  //console.log(view.state.field(backgroundlineField, false))
+  console.log(effects);
+  // console.log(view.state.field(backgroundlineField, false));
   view.dispatch({ effects });
-  //console.log(view.state.field(backgroundlineField, false))
+  // console.log(view.state.field(backgroundlineField, false));
   return true;
 }
 
@@ -184,7 +195,7 @@ const editor = new EditorView({
 });
 
 backgroundlineSelection(editor);
-backgroundlineSelection(editor);
+// backgroundlineSelection(editor);
 
 let currentMode = initMode;
 const fragmen = new Fragmen(option);
