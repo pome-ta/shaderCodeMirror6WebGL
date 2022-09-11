@@ -67,13 +67,24 @@ const backgroundlineField = StateField.define({
     return Decoration.none;
   },
   update(backgroundlines, tr) {
+  //console.log(this);
     backgroundlines = backgroundlines.map(tr.changes);
-    for (let e of tr.effects)
+    //console.log('c')
+    //console.log(tr);
+    //console.log(this);
+    for (let e of tr.effects) {
       if (e.is(addBackgroundLine)) {
+        //console.log('s')
+        //console.log(backgroundlines);
+        //console.log(e)
         backgroundlines = backgroundlines.update({
           add: [backgroundlineMark.range(e.value.from, e.value.to)],
         });
+        //console.log('e')
+        //console.log(backgroundlines);
       }
+    }
+    //console.log(backgroundlines);
     return backgroundlines;
   },
   provide: (f) => EditorView.decorations.from(f),
@@ -97,20 +108,26 @@ const backgroundlineTheme = EditorView.baseTheme({
 const backgroundlineMark = Decoration.mark({ class: 'cm-backgroundline' });
 
 function backgroundlineSelection(view) {
+  //console.log(view)
   const endRange = view.state.doc.length;
   const ranges = [EditorSelection.range(0, endRange)];
+  //console.log(ranges)
   let effects = ranges
     .filter((r) => !r.empty)
     .map(({ from, to }) => addBackgroundLine.of({ from, to }));
   if (!effects.length) {
     return false;
   }
+  //console.log(effects)
+  //console.log(view.state.field(backgroundlineField, false))
   if (!view.state.field(backgroundlineField, false)) {
     effects.push(
       StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
     );
   }
+  //console.log(view.state.field(backgroundlineField, false))
   view.dispatch({ effects });
+  //console.log(view.state.field(backgroundlineField, false))
   return true;
 }
 
