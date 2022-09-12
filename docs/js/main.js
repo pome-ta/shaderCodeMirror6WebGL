@@ -68,27 +68,11 @@ const backgroundlineField = StateField.define({
     return Decoration.none;
   },
   update(backgroundlines, tr) {
-    console.log('tr');
-    console.log(tr);
-    //console.log(this);
-    console.log('base');
-    console.log(backgroundlines);
-    backgroundlines = backgroundlines.map(tr.changes);
-    console.log('back');
-    console.log(backgroundlines);
-    //console.log('c')
-    //console.log(tr);
-    //console.log(this);
     for (let e of tr.effects) {
       if (e.is(addBackgroundLine)) {
-        //console.log('s')
-        //console.log(backgroundlines);
-        //console.log(e)
         backgroundlines = backgroundlines.update({
           add: [backgroundlineMark.range(e.value.from, e.value.to)],
         });
-        //console.log('e')
-        //console.log(backgroundlines);
       }
     }
     console.log(backgroundlines);
@@ -115,30 +99,21 @@ const backgroundlineTheme = EditorView.baseTheme({
 const backgroundlineMark = Decoration.mark({ class: 'cm-backgroundline' });
 
 function backgroundlineSelection(view) {
-  //console.log(view)
   const endRange = view.state.doc.length;
   const ranges = [EditorSelection.range(0, endRange)];
-  //console.log(ranges)
   let effects = ranges
     .filter((r) => !r.empty)
     .map(({ from, to }) => addBackgroundLine.of({ from, to }));
-  // console.log(effects);
   if (!effects.length) {
     return false;
   }
-  // console.log(effects);
   console.log(view.state.field(backgroundlineField, false));
   if (!view.state.field(backgroundlineField, false)) {
-    // if (true) {
-    console.log('hgoe');
     effects.push(
       StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
     );
   }
-  console.log(effects);
-  // console.log(view.state.field(backgroundlineField, false));
   view.dispatch({ effects });
-  // console.log(view.state.field(backgroundlineField, false));
   return true;
 }
 
@@ -195,7 +170,6 @@ const editor = new EditorView({
 });
 
 backgroundlineSelection(editor);
-// backgroundlineSelection(editor);
 
 let currentMode = initMode;
 const fragmen = new Fragmen(option);
