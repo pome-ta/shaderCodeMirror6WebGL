@@ -68,6 +68,7 @@ const backgroundlineField = StateField.define({
     return Decoration.none;
   },
   update(backgroundlines, tr) {
+    backgroundlines = backgroundlines.map(tr.changes);
     for (let e of tr.effects) {
       if (e.is(addBackgroundLine)) {
         backgroundlines = backgroundlines.update({
@@ -107,7 +108,6 @@ function backgroundlineSelection(view) {
   if (!effects.length) {
     return false;
   }
-  console.log(view.state.field(backgroundlineField, false));
   if (!view.state.field(backgroundlineField, false)) {
     effects.push(
       StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
