@@ -52,7 +52,6 @@ function onChange(docs) {
   if (fragmen === null) {
     return;
   }
-  backgroundlineSelection(editor);
   fragmen.render(sendSource(docs));
 }
 
@@ -76,11 +75,11 @@ const backgroundlineField = StateField.define({
         });
       }
     }
-    console.log(backgroundlines);
     return backgroundlines;
   },
   provide: (f) => EditorView.decorations.from(f),
 });
+
 const backgroundlineTheme = EditorView.baseTheme({
   '.cm-backgroundline': { backgroundColor: '#23232380' },
   '&.cm-editor': {
@@ -97,6 +96,7 @@ const backgroundlineTheme = EditorView.baseTheme({
     },
   },
 });
+
 const backgroundlineMark = Decoration.mark({ class: 'cm-backgroundline' });
 
 function backgroundlineSelection(view) {
@@ -136,6 +136,7 @@ const logColor = {
   warn: 'orangered',
   error: '#ff517b',
 };
+
 logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
@@ -271,44 +272,22 @@ if (hasTouchScreen()) {
   leftButton.addEventListener('click', () => {
     cursorCharLeft(editor);
     editor.focus();
-    // caret = editor.state.selection.main.anchor;
-    // caret -= 1;
-    // caret = caret > 0 ? caret : 0;
-    // moveCaret(caret);
   });
 
   rightButton.addEventListener('click', () => {
     cursorCharRight(editor);
     editor.focus();
-    // const docLength = editor.state.doc.length;
-    // caret = editor.state.selection.main.head;
-    // caret += 1;
-    // caret = caret < docLength ? caret : docLength;
-    // moveCaret(caret);
   });
-
-  /**
-   * caret行の上下操作
-   * @param {Boolean} forward - 0=flase=上, 1=true=下
-   * @returns number - 移動先のcaret
-   */
-  function moveUpDownCaret(forward) {
-    const selectionMain = editor.state.selection.main;
-    return editor.moveVertically(selectionMain, forward).anchor;
-  }
 
   upButton.addEventListener('click', () => {
     cursorLineUp(editor);
     editor.focus();
-    // caret = moveUpDownCaret(0);
-    // moveCaret(caret);
   });
   downButton.addEventListener('click', () => {
     cursorLineDown(editor);
     editor.focus();
-    // caret = moveUpDownCaret(1);
-    // moveCaret(caret);
   });
+
   commentButton.addEventListener('click', () => {
     toggleComment(editor);
     editor.focus();
