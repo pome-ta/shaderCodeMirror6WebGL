@@ -41,7 +41,7 @@ async function fetchShader(path) {
 }
 
 const updateCallback = EditorView.updateListener.of(
-  (update) => update.docChanged && onChange(update.state.doc.toString())
+  (update) => update.docChanged && onChange(update.state.doc.toString()),
 );
 
 // xxx: `fragman.js` で`#version 300 es` が付与されるため、ここで削除
@@ -49,73 +49,93 @@ const sendSource = (doc) =>
   currentMode ? doc.replace(/^#version 300 es/, '') : doc;
 
 function onChange(docs) {
+  bgRectangleSet(editor);
   if (fragmen === null) {
     return;
   }
   fragmen.render(sendSource(docs));
 }
 
-const addBackgroundLine = StateEffect.define({
-  map: ({ from, to }, change) => ({
-    from: change.mapPos(from),
-    to: change.mapPos(to),
-  }),
-});
+const bgRectangleClassName = 'cm-bgRectangle';
 
-const backgroundlineField = StateField.define({
+const bgRectEffect = {
+  add: StateEffect.define({ from: 0, to: 0 }),
+  remove: StateEffect.define({ from: 0, to: 0 }),
+};
+
+const bgRectangleField = StateField.define({
   create() {
     return Decoration.none;
   },
-  update(backgroundlines, tr) {
-    backgroundlines = backgroundlines.map(tr.changes);
-    for (let e of tr.effects) {
-      if (e.is(addBackgroundLine)) {
-        backgroundlines = backgroundlines.update({
-          add: [backgroundlineMark.range(e.value.from, e.value.to)],
+  update(bgRectangles, tr) {
+    bgRectangles = bgRectangles.map(tr.changes);
+    for (const ef of tr.effects) {
+      if (ef.is(bgRectEffect.add)) {
+        bgRectangles = bgRectangles.update({
+          add: [bgRectangleMark.range(ef.value.from, ef.value.to)],
+        });
+      } else if (ef.is(bgRectEffect.remove)) {
+        bgRectangles = bgRectangles.update({
+          // filter: (from, to, value) => {
+          //   let shouldRemove =
+          //     from === e.value.from &&
+          //     to === e.value.to &&
+          //     value.spec.class === bgRectangleClassName;
+          //   return !shouldRemove;
+          // },
+          filter: (f, t, value) =>
+          !(value.class === bgRectangleClassName),
         });
       }
     }
-    return backgroundlines;
+    return bgRectangles;
   },
   provide: (f) => EditorView.decorations.from(f),
 });
 
-const backgroundlineTheme = EditorView.baseTheme({
-  '.cm-backgroundline': { backgroundColor: '#23232380' },
+const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
+const bgRectangleTheme = EditorView.baseTheme({
+  '.cm-bgRectangle': { backgroundColor: '#23232380' },
+});
+
+function bgRectangleSet(view) {
+  const { state, dispatch } = view;
+  const { from, to } = state.selection.main.extend(0, state.doc.length);
+  const decoSet = state.field(bgRectangleField, false);
+
+  const addFromTO = (from, to) => bgRectEffect.add.of({ from, to });
+  const removeFromTO = (from, to) => bgRectEffect.remove.of({ from, to });
+
+  let effects = [];
+  effects.push(
+    !decoSet ? StateEffect.appendConfig.of([bgRectangleField]) : null,
+  );
+  decoSet?.between(from, to, (decoFrom, decoTo) => {
+    if (from === decoTo || to === decoFrom) {
+      return;
+    }
+    effects.push(removeFromTO(from, to));
+    effects.push(removeFromTO(decoFrom, decoTo));
+    effects.push(decoFrom < from ? addFromTO(decoFrom, from) : null);
+    effects.push(decoTo > to ? addFromTO(to, decoTo) : null);
+  });
+
+  effects.push(addFromTO(from, to));
+
+  if (!effects.length) {
+    return false;
+  }
+  dispatch({ effects: effects.filter((ef) => ef) });
+  return true;
+}
+
+const resOutlineTheme = EditorView.baseTheme({
   '&.cm-editor': {
     '&.cm-focused': {
-      // Provide a simple default outline to make sure a focused
-      // editor is visually distinct. Can't leave the default behavior
-      // because that will apply to the content element, which is
-      // inside the scrollable container and doesn't include the
-      // gutters. We also can't use an 'auto' outline, since those
-      // are, for some reason, drawn behind the element content, which
-      // will cause things like the active line background to cover
-      // the outline (#297).
       outline: '0px dotted #212121',
     },
   },
 });
-
-const backgroundlineMark = Decoration.mark({ class: 'cm-backgroundline' });
-
-function backgroundlineSelection(view) {
-  const endRange = view.state.doc.length;
-  const ranges = [EditorSelection.range(0, endRange)];
-  let effects = ranges
-    .filter((r) => !r.empty)
-    .map(({ from, to }) => addBackgroundLine.of({ from, to }));
-  if (!effects.length) {
-    return false;
-  }
-  if (!view.state.field(backgroundlineField, false)) {
-    effects.push(
-      StateEffect.appendConfig.of([backgroundlineField, backgroundlineTheme])
-    );
-  }
-  view.dispatch({ effects });
-  return true;
-}
 
 function moveCaret(pos) {
   editor.dispatch({
@@ -159,7 +179,12 @@ const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
 const fsPath = initMode ? fsPaths[1] : fsPaths[0];
 loadSource = await fetchShader(fsPath);
 
-const extensions = [...initExtensions, updateCallback];
+const extensions = [
+  ...initExtensions,
+  resOutlineTheme,
+  bgRectangleTheme,
+  updateCallback,
+];
 const state = EditorState.create({
   doc: loadSource,
   extensions: extensions,
@@ -170,7 +195,7 @@ const editor = new EditorView({
   parent: editorDiv,
 });
 
-backgroundlineSelection(editor);
+bgRectangleSet(editor);
 
 let currentMode = initMode;
 const fragmen = new Fragmen(option);
@@ -293,3 +318,4 @@ if (hasTouchScreen()) {
     editor.focus();
   });
 }
+
