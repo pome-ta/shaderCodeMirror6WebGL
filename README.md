@@ -2,6 +2,15 @@
 
 [playground - pages](https://pome-ta.github.io/shaderCodeMirror6WebGL/)
 
+## what is this ?
+
+Execute glsl code in real-time reflection.
+
+### for mobile
+
+- add special keys
+- Swiping the status area on a keys moves the caret
+
 ## WebGL Core
 
 [twigl.app](https://twigl.app/)
