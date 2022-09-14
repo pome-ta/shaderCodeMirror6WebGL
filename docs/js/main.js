@@ -1,20 +1,4 @@
 import {
-  screenDiv,
-  statusLogDiv,
-  logText,
-  modeSelect,
-  accessoryDiv,
-  buttonArea,
-  commentButton,
-  undoButton,
-  redoButton,
-  selectAllButton,
-  leftButton,
-  rightButton,
-  upButton,
-  downButton,
-} from './setDOMs.js';
-import {
   EditorView,
   EditorState,
   EditorSelection,
@@ -32,7 +16,42 @@ import {
   editorDiv,
   toggleComment,
 } from './modules/cmEditor.bundle.js';
+
 import { Fragmen, canvasDiv, option, initMode } from './shaderCanvas/index.js';
+
+import {
+  screenDiv,
+  statusLogDiv,
+  logText,
+  modeSelect,
+  accessoryDiv,
+  buttonArea,
+  commentButton,
+  undoButton,
+  redoButton,
+  selectAllButton,
+  leftButton,
+  rightButton,
+  upButton,
+  downButton,
+} from './setDOMs.js';
+
+const hasTouchScreen = () => {
+  if (navigator.maxTouchPoints > 0) {
+    return true;
+  }
+  if (navigator.msMaxTouchPoints > 0) {
+    return true;
+  }
+  if (window.matchMedia('(pointer:coarse)').matches) {
+    return true;
+  }
+  if ('orientation' in window) {
+    return true;
+  }
+
+  return false;
+};
 
 async function fetchShader(path) {
   const res = await fetch(path);
@@ -41,7 +60,7 @@ async function fetchShader(path) {
 }
 
 const updateCallback = EditorView.updateListener.of(
-  (update) => update.docChanged && onChange(update.state.doc.toString()),
+  (update) => update.docChanged && onChange(update.state.doc.toString())
 );
 
 // xxx: `fragman.js` で`#version 300 es` が付与されるため、ここで削除
@@ -57,6 +76,11 @@ function onChange(docs) {
 }
 
 const bgRectangleClassName = 'cm-bgRectangle';
+
+const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
+const bgRectangleTheme = EditorView.baseTheme({
+  '.cm-bgRectangle': { backgroundColor: '#23232380' },
+});
 
 const bgRectEffect = {
   add: StateEffect.define({ from: 0, to: 0 }),
@@ -83,19 +107,13 @@ const bgRectangleField = StateField.define({
           //     value.spec.class === bgRectangleClassName;
           //   return !shouldRemove;
           // },
-          filter: (f, t, value) =>
-          !(value.class === bgRectangleClassName),
+          filter: (f, t, value) => !(value.class === bgRectangleClassName),
         });
       }
     }
     return bgRectangles;
   },
   provide: (f) => EditorView.decorations.from(f),
-});
-
-const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
-const bgRectangleTheme = EditorView.baseTheme({
-  '.cm-bgRectangle': { backgroundColor: '#23232380' },
 });
 
 function bgRectangleSet(view) {
@@ -108,7 +126,7 @@ function bgRectangleSet(view) {
 
   let effects = [];
   effects.push(
-    !decoSet ? StateEffect.appendConfig.of([bgRectangleField]) : null,
+    !decoSet ? StateEffect.appendConfig.of([bgRectangleField]) : null
   );
   decoSet?.between(from, to, (decoFrom, decoTo) => {
     if (from === decoTo || to === decoFrom) {
@@ -150,7 +168,8 @@ container.id = 'container-main';
 container.style.height = '100%';
 
 const darkBackground = '#21252b';
-//document.body.backgroundColor = darkBackground
+document.body.backgroundColor = darkBackground;
+
 const logColor = {
   success: '#1da1f2',
   warn: 'orangered',
@@ -179,7 +198,15 @@ const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
 const fsPath = initMode ? fsPaths[1] : fsPaths[0];
 loadSource = await fetchShader(fsPath);
 
+const fontSizeTheme = EditorView.theme({
+  '&': {
+    // fontSize: '0.72rem',
+    fontSize: hasTouchScreen ? '0.75rem' : '1.0rem',
+  },
+});
+
 const extensions = [
+  fontSizeTheme,
   ...initExtensions,
   resOutlineTheme,
   bgRectangleTheme,
@@ -206,23 +233,6 @@ fragmen.onBuild((status, msg) => {
 fragmen.mode = currentMode;
 fragmen.render(sendSource(loadSource));
 
-const hasTouchScreen = () => {
-  if (navigator.maxTouchPoints > 0) {
-    return true;
-  }
-  if (navigator.msMaxTouchPoints > 0) {
-    return true;
-  }
-  if (window.matchMedia('(pointer:coarse)').matches) {
-    return true;
-  }
-  if ('orientation' in window) {
-    return true;
-  }
-
-  return false;
-};
-
 function visualViewportHandler() {
   buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
   const upBottom =
@@ -234,6 +244,7 @@ function visualViewportHandler() {
   accessoryDiv.style.bottom = `${upBottom}px`;
 }
 modeSelect.value = currentMode;
+modeSelect.style.color = logColor.success;
 modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
   currentMode = fragmen.mode;
@@ -254,14 +265,6 @@ if (hasTouchScreen()) {
     editor.focus();
   });
 
-  // selectAllButton.addEventListener('click', () => {
-  //   const endRange = editor.state.doc.length;
-  //   const transaction = {
-  //     selection: EditorSelection.create([EditorSelection.range(0, endRange)]),
-  //   };
-  //   editor.dispatch(transaction);
-  //   editor.focus();
-  // });
   selectAllButton.addEventListener('click', () => {
     selectAll(editor);
     editor.focus();
@@ -318,4 +321,3 @@ if (hasTouchScreen()) {
     editor.focus();
   });
 }
-

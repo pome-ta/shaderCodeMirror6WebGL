@@ -18923,11 +18923,12 @@ const chalky = '#e5c07b',
   // darkBackground = '#21252b',
   darkBackground = '#2c313a99', // 元は、`highlightBackground` の色
   // highlightBackground = '#2c313a',
-  highlightBackground = '#21252b', // 元は、`darkBackground` の色
+  // highlightBackground = '#21252b80', // 元は、`darkBackground` の色
+  highlightBackground = '#282c3480', // 元は、`darkBackground` の色
   // background = '#282c34',
   background = '#282c3400',
   tooltipBackground = '#353a42',
-  selection = '#3E4451',
+  selection = '#3E445180',
   cursor = '#528bff';
 /**
 The editor theme styles for One Dark.
@@ -19079,10 +19080,11 @@ const editorDiv = document.createElement('div');
 editorDiv.id = 'editor-div';
 editorDiv.style.width = '100%';
 
-let myTheme = EditorView.theme(
+const myTheme = EditorView.theme(
   {
     '&': {
-      fontSize: '0.72rem',
+      // fontSize: '0.72rem',
+      fontSize: '1rem',
     },
     '.cm-scroller': {
       fontFamily:

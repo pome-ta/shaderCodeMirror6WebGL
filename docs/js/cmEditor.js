@@ -32,10 +32,11 @@ const editorDiv = document.createElement('div');
 editorDiv.id = 'editor-div';
 editorDiv.style.width = '100%';
 
-let myTheme = EditorView.theme(
+const myTheme = EditorView.theme(
   {
     '&': {
-      fontSize: '0.72rem',
+      // fontSize: '0.72rem',
+      fontSize: '1rem',
     },
     '.cm-scroller': {
       fontFamily:
