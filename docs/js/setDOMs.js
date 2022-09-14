@@ -79,6 +79,7 @@ buttonArea.style.display = 'none';
 
 const [
   commentButton,
+  selectLineButton,
   leftButton,
   downButton,
   upButton,
@@ -86,7 +87,7 @@ const [
   selectAllButton,
   redoButton,
   undoButton,
-] = ['//', '←', '↓', '↑', '→', '⎁', '⤻', '⤺'].map((str) => {
+] = ['//', '▭', '←', '↓', '↑', '→', '⎁', '⤻', '⤺'].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;
@@ -126,6 +127,7 @@ export {
   accessoryDiv,
   buttonArea,
   commentButton,
+  selectLineButton,
   undoButton,
   redoButton,
   selectAllButton,

@@ -9,6 +9,7 @@ import {
   undo,
   redo,
   selectAll,
+  selectLine,
   cursorLineUp,
   cursorLineDown,
   cursorCharLeft,
@@ -28,6 +29,7 @@ import {
   accessoryDiv,
   buttonArea,
   commentButton,
+  selectLineButton,
   undoButton,
   redoButton,
   selectAllButton,
@@ -177,11 +179,8 @@ const whitespaceShow = highlightSpecialChars({
   render: (code) => {
     let node = document.createElement('span');
     node.classList.add('cm-whoteSpace');
-    // node.style.opacity = 0.5;
     node.style.color = ivory;
-    // node.style.color = stone;
     node.innerText = u22c5;
-    // node.innerText = uff65;
     node.title = '\\u' + code.toString(16);
     return node;
   },
@@ -346,6 +345,11 @@ if (hasTouchScreen()) {
 
   commentButton.addEventListener('click', () => {
     toggleComment(editor);
+    editor.focus();
+  });
+  
+  selectLineButton.addEventListener('click', () => {
+    selectLine(editor);
     editor.focus();
   });
 }

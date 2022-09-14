@@ -18924,7 +18924,7 @@ const chalky = '#e5c07b',
   darkBackground = '#2c313a99', // 元は、`highlightBackground` の色
   // highlightBackground = '#2c313a',
   // highlightBackground = '#21252b80', // 元は、`darkBackground` の色
-  highlightBackground = '#282c3480', // 元は、`darkBackground` の色
+  highlightBackground = '#282c34', // 元は、`darkBackground` の色
   // background = '#282c34',
   background = '#282c3400',
   tooltipBackground = '#353a42',
@@ -19112,4 +19112,4 @@ const initExtensions = [
   myTheme,
 ];
 
-export { Decoration, EditorSelection, EditorState, EditorView, StateEffect, StateField, cursorCharLeft, cursorCharRight, cursorLineDown, cursorLineUp, editorDiv, highlightSpecialChars, initExtensions, redo, selectAll, toggleComment, undo };
+export { Decoration, EditorSelection, EditorState, EditorView, StateEffect, StateField, cursorCharLeft, cursorCharRight, cursorLineDown, cursorLineUp, editorDiv, highlightSpecialChars, initExtensions, redo, selectAll, selectLine, toggleComment, undo };
