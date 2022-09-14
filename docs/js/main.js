@@ -1,5 +1,6 @@
 import {
   EditorView,
+  highlightSpecialChars,
   EditorState,
   EditorSelection,
   StateField,
@@ -162,6 +163,32 @@ function moveCaret(pos) {
   editor.focus();
 }
 
+const u00b7 = '·'; // ラテン語中点
+const u2018 = '∘'; // RING OPERATOR
+const u2022 = '•'; // bullet
+const u2023 = '‣'; // triangular bullet
+const u2219 = '∙'; // BULLET OPERATOR
+const u22c5 = '⋅'; // DOT OPERATOR
+const uff65 = '･'; // 半角中点
+
+const ivory = '#abb2bf44'; // todo: oneDark から拝借
+const stone = '#7d8799'; // Brightened compared to original to increase contrast  // 濃い灰色
+const whitespaceShow = highlightSpecialChars({
+  render: (code) => {
+    let node = document.createElement('span');
+    node.classList.add('cm-whoteSpace');
+    // node.style.opacity = 0.5;
+    node.style.color = ivory;
+    // node.style.color = stone;
+    node.innerText = u22c5;
+    // node.innerText = uff65;
+    node.title = '\\u' + code.toString(16);
+    return node;
+  },
+  // specialChars: /\x20/g,
+  addSpecialChars: /\x20/g,
+});
+
 /* -- main */
 const container = document.createElement('main');
 container.id = 'container-main';
@@ -210,6 +237,7 @@ const extensions = [
   ...initExtensions,
   resOutlineTheme,
   bgRectangleTheme,
+  whitespaceShow,
   updateCallback,
 ];
 const state = EditorState.create({

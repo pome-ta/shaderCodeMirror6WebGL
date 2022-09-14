@@ -10,6 +10,7 @@ import {
   lineNumbers,
   highlightActiveLineGutter,
   highlightActiveLine,
+  highlightSpecialChars,
   Decoration,
 } from '@codemirror/view';
 import {
@@ -66,6 +67,7 @@ const initExtensions = [
 
 export {
   EditorView,
+  highlightSpecialChars,
   EditorState,
   EditorSelection,
   StateField,
