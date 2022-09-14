@@ -4,6 +4,8 @@
 
 [#commands.indentSelection | CodeMirror Reference Manual](https://codemirror.net/docs/ref/#commands.indentSelection)
 
+`↹`, `᳅`
+
 
 ## 1行選択
 

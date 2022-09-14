@@ -10,6 +10,7 @@ import {
   redo,
   selectAll,
   selectLine,
+  indentSelection,
   cursorLineUp,
   cursorLineDown,
   cursorCharLeft,
@@ -30,6 +31,7 @@ import {
   buttonArea,
   commentButton,
   selectLineButton,
+  reIndentButton,
   undoButton,
   redoButton,
   selectAllButton,
@@ -110,7 +112,8 @@ const bgRectangleField = StateField.define({
           //     value.spec.class === bgRectangleClassName;
           //   return !shouldRemove;
           // },
-          filter: (f, t, value) => !(value.class === bgRectangleClassName),
+          filter: (f, t, value) =>
+          !(value.class === bgRectangleClassName),
         });
       }
     }
@@ -347,9 +350,16 @@ if (hasTouchScreen()) {
     toggleComment(editor);
     editor.focus();
   });
-  
+
   selectLineButton.addEventListener('click', () => {
     selectLine(editor);
     editor.focus();
+  });
+
+  reIndentButton.addEventListener('click', () => {
+    selectAll(editor);
+    indentSelection(editor);
+    cursorLineUp(editor);
+    //editor.focus();
   });
 }
