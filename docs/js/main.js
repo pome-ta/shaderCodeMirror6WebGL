@@ -229,8 +229,7 @@ loadSource = await fetchShader(fsPath);
 
 const fontSizeTheme = EditorView.theme({
   '&': {
-    // fontSize: '0.72rem',
-    fontSize: hasTouchScreen ? '0.75rem' : '1.0rem',
+    fontSize: hasTouchScreen ? '0.72rem' : '1.0rem',
   },
 });
 
@@ -263,7 +262,7 @@ fragmen.onBuild((status, msg) => {
 });
 fragmen.mode = currentMode;
 fragmen.render(sendSource(loadSource));
-
+/*
 function visualViewportHandler() {
   buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
   const upBottom =
@@ -274,6 +273,11 @@ function visualViewportHandler() {
 
   accessoryDiv.style.bottom = `${upBottom}px`;
 }
+*/
+
+
+
+
 modeSelect.value = currentMode;
 modeSelect.style.color = logColor.success;
 modeSelect.addEventListener('change', () => {
@@ -283,6 +287,20 @@ modeSelect.addEventListener('change', () => {
 });
 
 if (hasTouchScreen()) {
+
+const visualViewportHandler = ()=> {
+  buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
+  const upBottom =
+    window.innerHeight -
+    visualViewport.height +
+    visualViewport.offsetTop -
+    visualViewport.pageTop;
+
+  accessoryDiv.style.bottom = `${upBottom}px`;
+}
+
+
+
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
 

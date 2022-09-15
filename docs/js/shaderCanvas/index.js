@@ -32,18 +32,4 @@ const option = Object.assign(FRAGMEN_OPTION, {
   eventTarget: window,
 });
 
-// const fragmen = new Fragmen(option);
-/*
-fragmen.onBuild((status, msg) => {
-  message.textContent = msg;
-});
-*/
-
-// fragmen.mode = currentMode;
-// fragmen.render(currentSource);
-
-canvasDiv.addEventListener('touchmove', (event) => {
-  //event.preventDefault();
-});
-
 export { Fragmen, canvasDiv, option, initMode };
