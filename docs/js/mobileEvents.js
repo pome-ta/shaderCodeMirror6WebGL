@@ -1,11 +1,5 @@
 import {
-  EditorView,
-  highlightSpecialChars,
-  EditorState,
   EditorSelection,
-  StateField,
-  StateEffect,
-  Decoration,
   undo,
   redo,
   selectAll,
@@ -15,16 +9,11 @@ import {
   cursorLineDown,
   cursorCharLeft,
   cursorCharRight,
-  initExtensions,
-  editorDiv,
   toggleComment,
 } from './modules/cmEditor.bundle.js';
 
 import {
-  screenDiv,
   statusLogDiv,
-  logText,
-  modeSelect,
   accessoryDiv,
   buttonArea,
   commentButton,
@@ -49,14 +38,14 @@ export const mobileEventListeners = (editor) => {
       visualViewport.pageTop;
 
     accessoryDiv.style.bottom = `${upBottom}px`;
-  };
-  
+  }
+
   function moveCaret(pos) {
-  editor.dispatch({
-    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
-  });
-  editor.focus();
-}
+    editor.dispatch({
+      selection: EditorSelection.create([EditorSelection.cursor(pos)]),
+    });
+    editor.focus();
+  }
 
   let caret, headLine, endLine;
   let startX = 0;
@@ -82,12 +71,11 @@ export const mobileEventListeners = (editor) => {
     startX = endX;
     moveCaret(caret);
   }
-  
+
   visualViewport.addEventListener('scroll', visualViewportHandler);
   visualViewport.addEventListener('resize', visualViewportHandler);
   statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
   statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
-
 
   undoButton.addEventListener('click', () => {
     undo(editor);
@@ -118,7 +106,7 @@ export const mobileEventListeners = (editor) => {
     cursorLineUp(editor);
     editor.focus();
   });
-  
+
   downButton.addEventListener('click', () => {
     cursorLineDown(editor);
     editor.focus();
@@ -140,5 +128,4 @@ export const mobileEventListeners = (editor) => {
     cursorLineUp(editor);
     //editor.focus();
   });
-}
-
+};

@@ -34,7 +34,7 @@ function createActionButton(iconChar) {
 }
 
 /* -- set layout */
-const screenDiv = document.createElement('div');
+export const screenDiv = document.createElement('div');
 screenDiv.id = 'screen-wrap';
 screenDiv.style.position = 'relative';
 screenDiv.style.display = 'grid';
@@ -42,7 +42,7 @@ screenDiv.style.gridTemplateRows = '1fr auto';
 screenDiv.style.height = '100%';
 screenDiv.style.overflow = 'auto';
 
-const accessoryDiv = document.createElement('div');
+export const accessoryDiv = document.createElement('div');
 accessoryDiv.id = 'accessory-div';
 accessoryDiv.style.padding = '0.2rem';
 accessoryDiv.style.backgroundColor = '#1c1c1e80'; // Gray6
@@ -50,7 +50,7 @@ accessoryDiv.style.backgroundColor = '#1c1c1e80'; // Gray6
 accessoryDiv.style.position = 'sticky';
 accessoryDiv.style.bottom = 0;
 
-const statusLogDiv = document.createElement('div');
+export const statusLogDiv = document.createElement('div');
 statusLogDiv.id = 'statusLog-div';
 statusLogDiv.style.height = '1.6rem';
 //statusLogDiv.style.minHeight = '1.28rem';
@@ -65,12 +65,12 @@ statusLogDiv.style.fontSize = '0.64rem';
 statusLogDiv.style.fontFamily =
   'Consolas, Menlo, Monaco, source-code-pro, Courier New, monospace';
 
-const logText = document.createElement('p');
+export const logText = document.createElement('p');
 logText.id = 'logText-p';
 logText.style.margin = 'auto 0';
 logText.style.padding = 0;
 
-const buttonArea = document.createElement('div');
+export const buttonArea = document.createElement('div');
 buttonArea.id = 'buttonArea-div';
 buttonArea.style.padding = '0.2rem 0';
 buttonArea.style.display = 'flex';
@@ -88,16 +88,16 @@ export const [
   redoButton,
   undoButton,
   reIndentButton,
-] = ['//', '▭', '←', '↓', '↑', '→', '⎁', '⤻', '⤺','↹'].map((str) => {
+] = ['//', '▭', '←', '↓', '↑', '→', '⎁', '⤻', '⤺', '↹'].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;
 });
 
-
-const modeSelect = document.createElement('select');
+export const modeSelect = document.createElement('select');
 modeSelect.id = 'mode-select';
 modeSelect.style.background = '#1c1c1e80';
+
 const modeOptions = [
   'classic',
   'geek',
@@ -120,22 +120,3 @@ modeOptions.forEach((option, index) => {
     modeSelect.appendChild(optionElement);
   }
 });
-
-export {
-  screenDiv,
-  statusLogDiv,
-  logText,
-  modeSelect,
-  accessoryDiv,
-  buttonArea,
-  /*commentButton,
-  selectLineButton,
-  reIndentButton,
-  undoButton,
-  redoButton,
-  selectAllButton,
-  leftButton,
-  rightButton,
-  upButton,
-  downButton,*/
-};

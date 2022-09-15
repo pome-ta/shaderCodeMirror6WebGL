@@ -2,7 +2,6 @@ import {
   EditorView,
   highlightSpecialChars,
   EditorState,
-  EditorSelection,
   StateField,
   StateEffect,
   Decoration,
@@ -18,7 +17,7 @@ import {
   logText,
   modeSelect,
   accessoryDiv,
-  buttonArea
+  buttonArea,
 } from './setDOMs.js';
 
 import { mobileEventListeners } from './mobileEvents.js';
@@ -63,7 +62,6 @@ function onChange(docs) {
 }
 
 const bgRectangleClassName = 'cm-bgRectangle';
-
 const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
 const bgRectangleTheme = EditorView.baseTheme({
   '.cm-bgRectangle': { backgroundColor: '#23232380' },
@@ -94,8 +92,7 @@ const bgRectangleField = StateField.define({
           //     value.spec.class === bgRectangleClassName;
           //   return !shouldRemove;
           // },
-          filter: (f, t, value) =>
-          !(value.class === bgRectangleClassName),
+          filter: (f, t, value) => !(value.class === bgRectangleClassName),
         });
       }
     }
@@ -125,9 +122,7 @@ function bgRectangleSet(view) {
     effects.push(decoFrom < from ? addFromTO(decoFrom, from) : null);
     effects.push(decoTo > to ? addFromTO(to, decoTo) : null);
   });
-
   effects.push(addFromTO(from, to));
-
   if (!effects.length) {
     return false;
   }
@@ -143,16 +138,8 @@ const resOutlineTheme = EditorView.baseTheme({
   },
 });
 
-const u00b7 = '·'; // ラテン語中点
-const u2018 = '∘'; // RING OPERATOR
-const u2022 = '•'; // bullet
-const u2023 = '‣'; // triangular bullet
-const u2219 = '∙'; // BULLET OPERATOR
 const u22c5 = '⋅'; // DOT OPERATOR
-const uff65 = '･'; // 半角中点
-
 const ivory = '#abb2bf44'; // todo: oneDark から拝借
-const stone = '#7d8799'; // Brightened compared to original to increase contrast  // 濃い灰色
 const whitespaceShow = highlightSpecialChars({
   render: (code) => {
     let node = document.createElement('span');
@@ -162,7 +149,7 @@ const whitespaceShow = highlightSpecialChars({
     node.title = '\\u' + code.toString(16);
     return node;
   },
-  //specialChars: /\x20/g,
+  // specialChars: /\x20/g,
   addSpecialChars: /\x20/g,
 });
 
@@ -248,4 +235,3 @@ modeSelect.addEventListener('change', () => {
 });
 
 hasTouchScreen() ? mobileEventListeners(editor) : null;
-
