@@ -77,7 +77,7 @@ buttonArea.style.display = 'flex';
 buttonArea.style.justifyContent = 'space-around';
 buttonArea.style.display = 'none';
 
-const [
+export const [
   commentButton,
   selectLineButton,
   leftButton,
@@ -94,6 +94,10 @@ const [
   return ele;
 });
 
+
+const modeSelect = document.createElement('select');
+modeSelect.id = 'mode-select';
+modeSelect.style.background = '#1c1c1e80';
 const modeOptions = [
   'classic',
   'geek',
@@ -108,9 +112,6 @@ const modeOptions = [
   'geeker (MRT)',
   'geekest (MRT)',
 ];
-const modeSelect = document.createElement('select');
-modeSelect.id = 'mode-select';
-modeSelect.style.background = '#1c1c1e80';
 modeOptions.forEach((option, index) => {
   const optionElement = document.createElement('option');
   optionElement.value = index;
@@ -127,7 +128,7 @@ export {
   modeSelect,
   accessoryDiv,
   buttonArea,
-  commentButton,
+  /*commentButton,
   selectLineButton,
   reIndentButton,
   undoButton,
@@ -136,5 +137,5 @@ export {
   leftButton,
   rightButton,
   upButton,
-  downButton,
+  downButton,*/
 };

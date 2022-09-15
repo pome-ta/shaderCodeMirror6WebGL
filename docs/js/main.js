@@ -41,6 +41,8 @@ import {
   downButton,
 } from './setDOMs.js';
 
+import { mobileEventListeners } from './mobileEvents.js';
+
 const hasTouchScreen = () => {
   if (navigator.maxTouchPoints > 0) {
     return true;
@@ -161,13 +163,6 @@ const resOutlineTheme = EditorView.baseTheme({
   },
 });
 
-function moveCaret(pos) {
-  editor.dispatch({
-    selection: EditorSelection.create([EditorSelection.cursor(pos)]),
-  });
-  editor.focus();
-}
-
 const u00b7 = '·'; // ラテン語中点
 const u2018 = '∘'; // RING OPERATOR
 const u2022 = '•'; // bullet
@@ -272,99 +267,5 @@ modeSelect.addEventListener('change', () => {
   onChange(editor.state.doc.toString());
 });
 
-if (hasTouchScreen()) {
-  function visualViewportHandler() {
-    buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
-    const upBottom =
-      window.innerHeight -
-      visualViewport.height +
-      visualViewport.offsetTop -
-      visualViewport.pageTop;
-
-    accessoryDiv.style.bottom = `${upBottom}px`;
-  };
-
-  let caret, headLine, endLine;
-  let startX = 0;
-  let endX = 0;
-  function statusLogDivSwipeStart(event) {
-    const selectionMain = editor.state.selection.main;
-    caret = selectionMain.anchor;
-    headLine = editor.moveToLineBoundary(selectionMain, 0).anchor;
-    endLine = editor.moveToLineBoundary(selectionMain, 1).anchor;
-    startX = event.touches ? event.touches[0].pageX : event.pageX;
-  }
-
-  function statusLogDivSwipeMove(event) {
-    event.preventDefault();
-    endX = event.touches ? event.touches[0].pageX : event.pageX;
-    const moveDistance = Math.round((endX - startX) / 10); // xxx: スワイプでの移動距離数値
-    caret += moveDistance;
-    if (caret < headLine) {
-      caret = headLine;
-    } else if (caret >= endLine) {
-      caret = endLine;
-    }
-    startX = endX;
-    moveCaret(caret);
-  }
-  
-  visualViewport.addEventListener('scroll', visualViewportHandler);
-  visualViewport.addEventListener('resize', visualViewportHandler);
-  statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
-  statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
-
-
-  undoButton.addEventListener('click', () => {
-    undo(editor);
-    editor.focus();
-  });
-
-  redoButton.addEventListener('click', () => {
-    redo(editor);
-    editor.focus();
-  });
-
-  selectAllButton.addEventListener('click', () => {
-    selectAll(editor);
-    editor.focus();
-  });
-
-  leftButton.addEventListener('click', () => {
-    cursorCharLeft(editor);
-    editor.focus();
-  });
-
-  rightButton.addEventListener('click', () => {
-    cursorCharRight(editor);
-    editor.focus();
-  });
-
-  upButton.addEventListener('click', () => {
-    cursorLineUp(editor);
-    editor.focus();
-  });
-  
-  downButton.addEventListener('click', () => {
-    cursorLineDown(editor);
-    editor.focus();
-  });
-
-  commentButton.addEventListener('click', () => {
-    toggleComment(editor);
-    editor.focus();
-  });
-
-  selectLineButton.addEventListener('click', () => {
-    selectLine(editor);
-    editor.focus();
-  });
-
-  reIndentButton.addEventListener('click', () => {
-    selectAll(editor);
-    indentSelection(editor);
-    cursorLineUp(editor);
-    //editor.focus();
-  });
-}
+hasTouchScreen() ? mobileEventListeners(editor) : null;
 
