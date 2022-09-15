@@ -187,7 +187,7 @@ const whitespaceShow = highlightSpecialChars({
     node.title = '\\u' + code.toString(16);
     return node;
   },
-  // specialChars: /\x20/g,
+  //specialChars: /\x20/g,
   addSpecialChars: /\x20/g,
 });
 
@@ -237,9 +237,10 @@ const fontSizeTheme = EditorView.theme({
 const extensions = [
   fontSizeTheme,
   ...initExtensions,
+  whitespaceShow,
   resOutlineTheme,
   bgRectangleTheme,
-  whitespaceShow,
+  //whitespaceShow,
   updateCallback,
 ];
 const state = EditorState.create({
