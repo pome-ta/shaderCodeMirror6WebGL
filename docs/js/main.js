@@ -61,6 +61,9 @@ function onChange(docs) {
   fragmen.render(sendSource(docs));
 }
 
+/**
+ * backGround Rectangle span
+ */
 const bgRectangleClassName = 'cm-bgRectangle';
 const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
 const bgRectangleTheme = EditorView.baseTheme({
@@ -130,14 +133,9 @@ function bgRectangleSet(view) {
   return true;
 }
 
-const resOutlineTheme = EditorView.baseTheme({
-  '&.cm-editor': {
-    '&.cm-focused': {
-      outline: '0px dotted #212121',
-    },
-  },
-});
-
+/**
+ * whitespaceShow
+ */
 const u22c5 = '⋅'; // DOT OPERATOR
 const ivory = '#abb2bf44'; // todo: oneDark から拝借
 const whitespaceShow = highlightSpecialChars({
@@ -151,6 +149,14 @@ const whitespaceShow = highlightSpecialChars({
   },
   // specialChars: /\x20/g,
   addSpecialChars: /\x20/g,
+});
+
+const resOutlineTheme = EditorView.baseTheme({
+  '&.cm-editor': {
+    '&.cm-focused': {
+      outline: '0px dotted #212121',
+    },
+  },
 });
 
 /* -- main */
