@@ -262,24 +262,10 @@ fragmen.onBuild((status, msg) => {
 });
 fragmen.mode = currentMode;
 fragmen.render(sendSource(loadSource));
-/*
-function visualViewportHandler() {
-  buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
-  const upBottom =
-    window.innerHeight -
-    visualViewport.height +
-    visualViewport.offsetTop -
-    visualViewport.pageTop;
-
-  accessoryDiv.style.bottom = `${upBottom}px`;
-}
-*/
-
-
-
 
 modeSelect.value = currentMode;
 modeSelect.style.color = logColor.success;
+
 modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
   currentMode = fragmen.mode;
@@ -287,37 +273,16 @@ modeSelect.addEventListener('change', () => {
 });
 
 if (hasTouchScreen()) {
+  function visualViewportHandler() {
+    buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
+    const upBottom =
+      window.innerHeight -
+      visualViewport.height +
+      visualViewport.offsetTop -
+      visualViewport.pageTop;
 
-const visualViewportHandler = ()=> {
-  buttonArea.style.display = editor.hasFocus ? 'flex' : 'none';
-  const upBottom =
-    window.innerHeight -
-    visualViewport.height +
-    visualViewport.offsetTop -
-    visualViewport.pageTop;
-
-  accessoryDiv.style.bottom = `${upBottom}px`;
-}
-
-
-
-  visualViewport.addEventListener('scroll', visualViewportHandler);
-  visualViewport.addEventListener('resize', visualViewportHandler);
-
-  undoButton.addEventListener('click', () => {
-    undo(editor);
-    editor.focus();
-  });
-
-  redoButton.addEventListener('click', () => {
-    redo(editor);
-    editor.focus();
-  });
-
-  selectAllButton.addEventListener('click', () => {
-    selectAll(editor);
-    editor.focus();
-  });
+    accessoryDiv.style.bottom = `${upBottom}px`;
+  };
 
   let caret, headLine, endLine;
   let startX = 0;
@@ -343,8 +308,27 @@ const visualViewportHandler = ()=> {
     startX = endX;
     moveCaret(caret);
   }
+  
+  visualViewport.addEventListener('scroll', visualViewportHandler);
+  visualViewport.addEventListener('resize', visualViewportHandler);
   statusLogDiv.addEventListener('touchstart', statusLogDivSwipeStart);
   statusLogDiv.addEventListener('touchmove', statusLogDivSwipeMove);
+
+
+  undoButton.addEventListener('click', () => {
+    undo(editor);
+    editor.focus();
+  });
+
+  redoButton.addEventListener('click', () => {
+    redo(editor);
+    editor.focus();
+  });
+
+  selectAllButton.addEventListener('click', () => {
+    selectAll(editor);
+    editor.focus();
+  });
 
   leftButton.addEventListener('click', () => {
     cursorCharLeft(editor);
@@ -360,6 +344,7 @@ const visualViewportHandler = ()=> {
     cursorLineUp(editor);
     editor.focus();
   });
+  
   downButton.addEventListener('click', () => {
     cursorLineDown(editor);
     editor.focus();
@@ -382,3 +367,4 @@ const visualViewportHandler = ()=> {
     //editor.focus();
   });
 }
+
