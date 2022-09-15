@@ -6,18 +6,8 @@ import {
   StateField,
   StateEffect,
   Decoration,
-  undo,
-  redo,
-  selectAll,
-  selectLine,
-  indentSelection,
-  cursorLineUp,
-  cursorLineDown,
-  cursorCharLeft,
-  cursorCharRight,
   initExtensions,
   editorDiv,
-  toggleComment,
 } from './modules/cmEditor.bundle.js';
 
 import { Fragmen, canvasDiv, option, initMode } from './shaderCanvas/index.js';
@@ -28,17 +18,7 @@ import {
   logText,
   modeSelect,
   accessoryDiv,
-  buttonArea,
-  commentButton,
-  selectLineButton,
-  reIndentButton,
-  undoButton,
-  redoButton,
-  selectAllButton,
-  leftButton,
-  rightButton,
-  upButton,
-  downButton,
+  buttonArea
 } from './setDOMs.js';
 
 import { mobileEventListeners } from './mobileEvents.js';
