@@ -180,7 +180,7 @@ logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
-statusLogDiv.appendChild(modeSelect);
+//statusLogDiv.appendChild(modeSelect);
 
 accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
@@ -193,9 +193,15 @@ document.body.appendChild(container);
 
 /* -- loadSource */
 let loadSource;
-const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
+
+const fsPath =
+  `${location.protocol}` === 'file:'
+    ? './shaders/fs/fsDev300es.js'
+    : './shaders/fs/fsMain300es.js';
+
+//const fsPaths = ['./shaders/fs/fsMain.js', './shaders/fs/fsMain300es.js'];
 // xxx: 読み込み方法が雑
-const fsPath = initMode ? fsPaths[1] : fsPaths[0];
+//const fsPath = initMode ? fsPaths[1] : fsPaths[0];
 loadSource = await fetchShader(fsPath);
 
 const fontSizeTheme = EditorView.theme({
