@@ -18,7 +18,6 @@ import {
   buttonArea,
   commentButton,
   selectLineButton,
-  //reIndentButton,
   undoButton,
   redoButton,
   selectAllButton,
@@ -26,6 +25,7 @@ import {
   rightButton,
   upButton,
   downButton,
+  //reIndentButton,
 } from './setDOMs.js';
 
 export const mobileEventListeners = (editor) => {

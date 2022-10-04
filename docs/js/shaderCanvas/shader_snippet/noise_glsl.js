@@ -253,4 +253,3 @@ mat3 rotate3D(float angle, vec3 axis){
 const float PI = 3.141592653589793;
 const float PI2 = PI * 2.0;
 `;
-
