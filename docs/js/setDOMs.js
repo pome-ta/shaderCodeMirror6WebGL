@@ -87,8 +87,8 @@ export const [
   selectAllButton,
   redoButton,
   undoButton,
-  reIndentButton,
-] = ['//', '▭', '←', '↓', '↑', '→', '⎁', '⤻', '⤺', '↹'].map((str) => {
+  //reIndentButton,
+] = ['//', '▭', '←', '↓', '↑', '→', '⎁', '⤻', '⤺'].map((str) => {
   const ele = createActionButton(str);
   buttonArea.appendChild(ele);
   return ele;

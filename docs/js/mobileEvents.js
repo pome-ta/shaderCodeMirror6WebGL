@@ -18,7 +18,7 @@ import {
   buttonArea,
   commentButton,
   selectLineButton,
-  reIndentButton,
+  //reIndentButton,
   undoButton,
   redoButton,
   selectAllButton,
