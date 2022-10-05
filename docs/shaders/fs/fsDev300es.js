@@ -22,7 +22,7 @@ void main(){
   int ind = int(pos.y);// 配列のインデックス
   
   // vec3 col = mix(col3[ind], col3[ind + 1], fract(pos.y));
-    vec3 col = mix(col3[ind], col3[ind + 1], (sin(time)));
+    vec3 col = mix(col3[ind], col3[ind + 1], abs(sin(time)));
 
   fragColor = vec4(col, 1.0);
 }
