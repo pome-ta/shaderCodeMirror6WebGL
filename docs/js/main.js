@@ -213,10 +213,9 @@ const fontSizeTheme = EditorView.theme({
 const extensions = [
   fontSizeTheme,
   ...initExtensions,
-  whitespaceShow,
+  //whitespaceShow,
   resOutlineTheme,
   bgRectangleTheme,
-  //whitespaceShow,
   updateCallback,
 ];
 const state = EditorState.create({
