@@ -18930,14 +18930,16 @@ const chalky = '#e5c07b',
   whiskey = '#d19a66',
   violet = '#c678dd',
   // darkBackground = '#21252b',
-  darkBackground = '#2c313a99', // 元は、`highlightBackground` の色
+  darkBackground = '#2c313a80', // 元は、`highlightBackground` の色
   // highlightBackground = '#2c313a',
   // highlightBackground = '#21252b80', // 元は、`darkBackground` の色
-  highlightBackground = '#282c34', // 元は、`darkBackground` の色
+  highlightBackground = '#282c3480', // 元は、`darkBackground` の色
+  // highlightBackground = '#ffc652', // 元は、`darkBackground` の色
   // background = '#282c34',
   background = '#282c3400',
   tooltipBackground = '#353a42',
-  selection = '#3E445180',
+  // selection = '#3E4451',
+  selection = '#528bff80',
   cursor = '#528bff';
 /**
 The editor theme styles for One Dark.

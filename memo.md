@@ -1,3 +1,14 @@
+
+# 📝 2022/10/06
+
+## 座布団
+
+空白可視化で、むりやりつっこんでいたやつは、日本語入力の時にバグるので現在設定していない。
+
+## theme color
+
+文字選択時の色がわかり辛い。。。いろいろ透過設定をしているので、いろいろ変な反映になっている模様
+
 # 📝 2022/09/29
 
 ## 300 es
@@ -12,11 +23,9 @@
 
 `↹`, `᳅`
 
-
 ## 1行選択
 
 [#commands.selectLine | CodeMirror Reference Manual](https://codemirror.net/docs/ref/#commands.selectLine)
-
 
 # 📝 2022/09/10
 
@@ -93,8 +102,6 @@ document.addEventListener('keydown', () => {
 Win のChrome なら補足できてるから
 
 iOS とmacOS 側の問題かと
-
-
 
 ## `memo.md` を追加
 

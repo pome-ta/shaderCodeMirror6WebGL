@@ -67,7 +67,7 @@ function onChange(docs) {
 const bgRectangleClassName = 'cm-bgRectangle';
 const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
 const bgRectangleTheme = EditorView.baseTheme({
-  '.cm-bgRectangle': { backgroundColor: '#23232380' },
+  '.cm-bgRectangle': { backgroundColor: '#232323aa' },
 });
 
 const bgRectEffect = {
