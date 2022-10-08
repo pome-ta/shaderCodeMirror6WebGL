@@ -1,32 +1,41 @@
 #version 300 es
+
+precision highp int;
 precision highp float;
+
+out vec4 fragColor;
 
 uniform vec2 u_resolution;
 uniform float u_time;
 
-out vec4 fragColor;
-
-int channel;
-
-float fractSin11(float x) {
-  return fract(1e4 * sin(x));
-}
-
-float fractSin21(vec2 xy) {
-  return fract(sin(dot(xy, vec2(12.9898, 78.233))) * 43758.5453123);
-}
-
-
 void main() {
-  vec2 pos = gl_FragCoord.xy;
-  pos += floor(60.0 * u_time);
-  channel = int(2.0 * gl_FragCoord.x / u_resolution.x);
+  vec2 pos = gl_FragCoord.xy / u_resolution.xy;
+  pos *= vec2(32.0, 9.0);
+  uint[9] a = uint[](
+    uint(u_time),
+    0xbu,
+    9u,
+    0xbu ^ 9u,
+    0xffffffffu,
+    0xffffffffu + uint(u_time),
+    floatBitsToUint(floor(u_time)),
+    floatBitsToUint(-floor(u_time)),
+    floatBitsToUint(11.5625)
+  );
   
-  if (channel == 0) {  // 真ん中で左右に分ける
-    fragColor = vec4(fractSin11(pos.x));
+  if (fract(pos.x) < 0.1) {
+    if (floor(pos.x) == 1.0) {
+      fragColor = vec4(1, 0, 0, 1);
+    } else if (floor(pos.x) == 9.0) {
+      fragColor = vec4(0, 1, 0, 1);
+    } else {
+      fragColor = vec4(0.5);
+    }
+  } else if (fract(pos.y) < 0.1) {
+    fragColor = vec4(0.5);
   } else {
-    fragColor = vec4(fractSin21(pos.xy / u_resolution.xy));
+    uint b = a[int(pos.y)]; 
+    b = (b << uint(pos.x)) >> 31;
+    fragColor = vec4(vec3(b), 1.0); 
   }
-
-  fragColor.a = 1.0;
 }
