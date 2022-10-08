@@ -9,7 +9,7 @@ out vec4 fragColor;
 int channel;
 
 float fractSin11(float x) {
-  return fract(1000.0 * sin(x));
+  return fract(1e4 * sin(x));
 }
 
 float fractSin21(vec2 xy) {
