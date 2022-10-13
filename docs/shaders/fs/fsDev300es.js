@@ -1,47 +1,70 @@
 #version 300 es
 precision highp float;
+precision highp int;
+
 out vec4 fragColor;
+
 uniform float u_time;
 uniform vec2 u_resolution;
+ivec2 channel;
 
-// const float PI = 3.1415926;
-const float PI = acos(-1.0);
+const uint UINT_MAX = 0xffffffffu;
+uvec3 k = uvec3(0x456789abu, 0x6789ab45u, 0x89ab4567u);  // 算術積で使う定数
 
-float atan2(float y, float x){
-  if (x == 0.0){
-    return sign(y) * PI / 2.0;
-  } else {
-    return atan(y, x);
+uvec3 u = uvec3(1, 2, 3);  // シフト数
+
+uvec2 uhash22(uvec2 n){
+  // 引数・戻り値が 2 次元の uint 型ハッシュ関数
+  n ^= (n.yx << u.xy);
+  n ^= (n.yx >> u.xy);
+  n *= k.xy;
+  n ^= (n.yx << u.xy);
+  return n * k.xy;
+}
+
+uvec3 uhash33(uvec3 n){
+  n ^= (n.yzx << u);
+  n ^= (n.yzx >> u);
+  n *= k;
+  n ^= (n.yzx << u);
+  return n * k;
+}
+
+vec2 hash22(vec2 p){
+  uvec2 n = floatBitsToUint(p);
+  return vec2(uhash22(n)) / vec2(UINT_MAX);
+}
+vec3 hash33(vec3 p){
+  uvec3 n = floatBitsToUint(p);
+  return vec3(uhash33(n)) / vec3(UINT_MAX);
+}
+
+float hash21(vec2 p){
+  uvec2 n = floatBitsToUint(p);
+  return float(uhash22(n).x) / float(UINT_MAX);
+}
+float hash31(vec3 p){
+  uvec3 n = floatBitsToUint(p);
+  return float(uhash33(n).x) / float(UINT_MAX);
+}
+
+void main() {
+  float time = floor(60.* u_time);
+  vec2 pos = gl_FragCoord.xy + time;
+  channel = ivec2(gl_FragCoord.xy * 2.0 / u_resolution.xy);
+  if (channel[0] == 0) { //left
+    if (channel[1] == 0){
+      fragColor.rgb = vec3(hash21(pos));
+    } else {
+      fragColor.rgb = vec3(hash22(pos), 1.0);
+    }
+  } else {    //right
+    if (channel[1] == 0){
+      fragColor.rgb = vec3(hash31(vec3(pos, time)));
+    } else {
+      fragColor.rgb = hash33(vec3(pos, time));
+    }
   }
-  // or use '?:' as follows:
-  // return x == 0.0 ? sign(y) * PI / 2.0 : atan(y, x);
-}
-
-vec2 xy2pol(vec2 xy){
-  return vec2(atan2(xy.y, xy.x), length(xy));
-}
-
-vec2 pol2xy(vec2 pol){
-  return pol.y * vec2(cos(pol.x), sin(pol.x));
-}
-
-vec3 tex(vec2 st){
-  vec3[3] col3 = vec3[](
-    vec3(0.0, 0.0, 1.0),
-    vec3(1.0, 0.0, 0.0),
-    vec3(1.0)
-  );
-  st.s = st.s / PI + 1.0;
-  int ind = int(st.s) ;
-  vec3 col = mix(col3[ind % 2], col3[(ind + 1) % 2], fract(st.s));
-  return mix(col3[2], col, st.t);
-}
-
-void main(){
-  vec2 pos = gl_FragCoord.xy / u_resolution.xy;
-  // pos = sin(u_time) * pos.xy - vec2(1.0);
-  pos = 4.0 * pos.xy - vec2(1.0);
-
-  pos = xy2pol(pos);    
-  fragColor = vec4(tex(pos), 1.0);
+  
+  fragColor.a = 1.0;
 }
