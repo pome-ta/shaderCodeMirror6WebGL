@@ -15,6 +15,7 @@ uvec3 k = uvec3(
 uvec3 u = uvec3(1, 2, 3);
 const uint UINT_MAX = 0xffffffffu;
 
+
 uvec2 uhash22(uvec2 n) {
   n ^= (n.yx << u.xy);
   n ^= (n.yx >> u.xy);
@@ -23,52 +24,103 @@ uvec2 uhash22(uvec2 n) {
   return n * k.x;
 }
 
-uvec3 uhash33(uvec3 n) {
-  n ^= (n.yzx << u);
-  n ^= (n.yzx >> u);
-  n *= k;
-  n ^= (n.yzx << u);
-  return n * k;
+float hash21(vec2 p) {
+  uvec2 n = floatBitsToUint(p);
+  return float(uhash22(n).x) / float(UINT_MAX);
 }
 
-
-float hash31(vec3 p) {
-  uvec3 n = floatBitsToUint(p);
-  return float(uhash33(n).x) / float(UINT_MAX);
-}
-
-
-
-float vnoise31(vec3 p) {
-  vec3 n = floor(p);
-  float[8] v;
-  for (int k = 0; k < 2; k++) {
-    for (int j = 0; j < 2; j++) {
-      for (int i = 0; i < 2; i++) {
-        v[i + 2 * j + 4 * k] = hash31(n + vec3(i, j, k)); // マスの8頂点のハッシュ値
-      }
+float hermiteInterpolation21(vec2 p) {
+  //2 次元値ノイズ : 双線形補間
+  vec2 n = floor(p);
+  float[4] v;
+  for (int j = 0; j < 2; j++) {
+    for (int i = 0; i < 2; i++) {
+      v[i + 2 * j] = hash21(n + vec2(i, j)); // マスの 4 頂点のハッシュ値
     }
   }
-  vec3 f = fract(p);
-  f = f * f * (3.0 - 2.0 * f); // エルミート補間
-  float[2] w;
-  for (int i = 0; i < 2; i++) {
-    w[i] = mix(
-      mix(v[4 * i], v[4 * i + 1], f[0]),
-      mix(v[4 * i + 2], v[4 * i + 3], f[0]),
-      f[1]
-    ); // 底面と上面での補間
-  }
-  return mix(w[0], w[1], f[2]); // 高さに関する補間
+  vec2 f = fract(p);
+  return mix(
+    mix(v[0], v[1], f[0]),
+    mix(v[2], v[3], f[0]),
+    f[1]
+  );
 }
 
-
+vec3 hermiteInterpolation23(vec2 p) {
+  //2 次元値ノイズ : 双線形補間
+  vec2 n = floor(p);
+  
+  float[12] v;
+  for (int j = 0; j < 2; j++) {
+    for (int i = 0; i < 8; i++) {
+      // マスの 4 頂点のハッシュ値
+      v[i + 2 * j] = hash21(n + vec2(i, j));
+    }
+  }
+  
+  
+  
+  
+  float[4] vx;
+  float counter = 0.0;
+  for (int jx = 0; jx < 2; jx++) {
+    for (int ix = 0; ix < 2; ix++) {
+      // マスの 4 頂点のハッシュ値
+      vx[ix + 2 * jx] = hash21(n + vec2(ix, jx) + counter);
+    }
+  }
+  
+  float[4] vy;
+  counter += 1.0;
+  for (int jy = 0; jy < 2; jy++) {
+    for (int iy = 0; iy < 2; iy++) {
+      // マスの 4 頂点のハッシュ値
+      vy[iy + 2 * jy] = hash21(n + vec2(iy, jy) + counter);
+    }
+  }
+  
+  float[4] vz;
+  counter += 1.0;
+  for (int jz = 0; jz < 2; jz++) {
+    for (int iz = 0; iz < 2; iz++) {
+      // マスの 4 頂点のハッシュ値
+      vz[iz + 2 * jz] = hash21(n + vec2(iz, jz) + counter);
+    }
+  }
+  vec2 f = fract(p);
+  vec3 outRGB;
+  /*
+  return mix(
+    mix(v[0], v[1], f[0]),
+    mix(v[2], v[3], f[0]),
+    f[1]
+  );
+  */
+  outRGB.x = mix(
+    mix(v[0], v[1], f[0]),
+    mix(v[2], v[3], f[0]),
+    f[1]
+  );
+  outRGB.y = mix(
+    mix(v[4], v[5], f[0]),
+    mix(v[6], v[7], f[0]),
+    f[1]
+  );
+  outRGB.z = mix(
+    mix(v[8], v[9], f[0]),
+    mix(v[10], v[11], f[0]),
+    f[1]
+  );
+  return outRGB;
+}
 
 void main() {
   vec2 pos = gl_FragCoord.xy / min(u_resolution.x, u_resolution.y);
+  
   pos = 16.0 * pos + u_time;
-
-  fragColor = vec4(vnoise31(vec3(pos, u_time)));
+  
+  //fragColor = vec4(hermiteInterpolation21(pos));
+  fragColor.xyz = hermiteInterpolation23(pos);
   fragColor.a = 1.0;
 }
 
