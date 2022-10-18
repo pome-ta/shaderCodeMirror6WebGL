@@ -51,10 +51,10 @@ vec3 hermiteInterpolation23(vec2 p) {
   vec2 n = floor(p);
   
   float[12] v;
-  for (int j = 0; j < 2; j++) {
-    for (int i = 0; i < 8; i++) {
+  for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < 4; i++) {
       // マスの 4 頂点のハッシュ値
-      v[i + 2 * j] = hash21(n + vec2(i, j));
+      v[i + 4 * j] = hash21(n + vec2(i, j));
     }
   }
   
