@@ -1659,17 +1659,19 @@ class FacetProvider {
                 return 0;
             },
             reconfigure: (state, oldState) => {
-                let newVal = getter(state);
-                let oldAddr = oldState.config.address[id];
+                let newVal, oldAddr = oldState.config.address[id];
                 if (oldAddr != null) {
                     let oldVal = getAddr(oldState, oldAddr);
                     if (this.dependencies.every(dep => {
                         return dep instanceof Facet ? oldState.facet(dep) === state.facet(dep) :
                             dep instanceof StateField ? oldState.field(dep, false) == state.field(dep, false) : true;
-                    }) || (multi ? compareArray(newVal, oldVal, compare) : compare(newVal, oldVal))) {
+                    }) || (multi ? compareArray(newVal = getter(state), oldVal, compare) : compare(newVal = getter(state), oldVal))) {
                         state.values[idx] = oldVal;
                         return 0;
                     }
+                }
+                else {
+                    newVal = getter(state);
                 }
                 state.values[idx] = newVal;
                 return 1 /* SlotStatus.Changed */;
@@ -2804,6 +2806,18 @@ class EditorState {
     /**
     Find the values for a given language data field, provided by the
     the [`languageData`](https://codemirror.net/6/docs/ref/#state.EditorState^languageData) facet.
+    
+    Examples of language data fields are...
+    
+    - [`"commentTokens"`](https://codemirror.net/6/docs/ref/#commands.CommentTokens) for specifying
+      comment syntax.
+    - [`"autocomplete"`](https://codemirror.net/6/docs/ref/#autocomplete.autocompletion^config.override)
+      for providing language-specific completion sources.
+    - [`"wordChars"`](https://codemirror.net/6/docs/ref/#state.EditorState.charCategorizer) for adding
+      characters that should be considered part of words in this
+      language.
+    - [`"closeBrackets"`](https://codemirror.net/6/docs/ref/#autocomplete.CloseBracketConfig) controls
+      bracket closing behavior.
     */
     languageDataAt(name, pos, side = -1) {
         let values = [];
@@ -3308,7 +3322,7 @@ class RangeSet {
     */
     static eq(oldSets, newSets, from = 0, to) {
         if (to == null)
-            to = 1000000000 /* C.Far */;
+            to = 1000000000 /* C.Far */ - 1;
         let a = oldSets.filter(set => !set.isEmpty && newSets.indexOf(set) < 0);
         let b = newSets.filter(set => !set.isEmpty && oldSets.indexOf(set) < 0);
         if (a.length != b.length)
@@ -5016,7 +5030,7 @@ class WidgetView extends ContentView {
             if (pos > 0 ? i == 0 : i == rects.length - 1 || rect.top < rect.bottom)
                 break;
         }
-        return flattenRect(rect, this.side > 0);
+        return this.length ? rect : flattenRect(rect, this.side > 0);
     }
     get isEditable() { return false; }
     destroy() {
@@ -5904,6 +5918,9 @@ const exceptionSink = /*@__PURE__*/Facet.define();
 const updateListener = /*@__PURE__*/Facet.define();
 const inputHandler$1 = /*@__PURE__*/Facet.define();
 const perLineTextDirection = /*@__PURE__*/Facet.define({
+    combine: values => values.some(x => x)
+});
+const nativeSelectionHidden = /*@__PURE__*/Facet.define({
     combine: values => values.some(x => x)
 });
 class ScrollTarget {
@@ -6818,8 +6835,9 @@ class DocView extends ContentView {
     enforceCursorAssoc() {
         if (this.compositionDeco.size)
             return;
-        let cursor = this.view.state.selection.main;
-        let sel = getSelection(this.view.root);
+        let { view } = this, cursor = view.state.selection.main;
+        let sel = getSelection(view.root);
+        let { anchorNode, anchorOffset } = view.observer.selectionRange;
         if (!sel || !cursor.empty || !cursor.assoc || !sel.modify)
             return;
         let line = LineView.find(this, cursor.head);
@@ -6834,6 +6852,12 @@ class DocView extends ContentView {
         let dom = this.domAtPos(cursor.head + cursor.assoc);
         sel.collapse(dom.node, dom.offset);
         sel.modify("move", cursor.assoc < 0 ? "forward" : "backward", "lineboundary");
+        // This can go wrong in corner cases like single-character lines,
+        // so check and reset if necessary.
+        view.observer.readSelectionRange();
+        let newRange = view.observer.selectionRange;
+        if (view.docView.posFromDOM(newRange.anchorNode, newRange.anchorOffset) != cursor.from)
+            sel.collapse(anchorNode, anchorOffset);
     }
     mayControlSelection() {
         let active = this.view.root.activeElement;
@@ -8917,7 +8941,7 @@ class ViewState {
         // Flag set when editor content was redrawn, so that the next
         // measure stage knows it must read DOM layout
         this.mustMeasureContent = true;
-        this.defaultTextDirection = Direction.RTL;
+        this.defaultTextDirection = Direction.LTR;
         this.visibleRanges = [];
         // Cursor 'assoc' is only significant when the cursor is on a line
         // wrap point, where it must stick to the character that it is
@@ -8982,7 +9006,8 @@ class ViewState {
         if (scrollTarget)
             this.scrollTarget = scrollTarget;
         if (!this.mustEnforceCursorAssoc && update.selectionSet && update.view.lineWrapping &&
-            update.state.selection.main.empty && update.state.selection.main.assoc)
+            update.state.selection.main.empty && update.state.selection.main.assoc &&
+            !update.state.facet(nativeSelectionHidden))
             this.mustEnforceCursorAssoc = true;
     }
     measure(view) {
@@ -9045,7 +9070,7 @@ class ViewState {
             oracle.heightChanged = false;
             for (let vp of this.viewports) {
                 let heights = vp.from == this.viewport.from ? lineHeights : view.docView.measureVisibleLineHeights(vp);
-                this.heightMap = this.heightMap.updateHeight(oracle, 0, refresh, new MeasuredHeights(vp.from, heights));
+                this.heightMap = (refresh ? HeightMap.empty().applyChanges(this.stateDeco, Text.empty, this.heightOracle, [new ChangedRange(0, 0, 0, view.state.doc.length)]) : this.heightMap).updateHeight(oracle, 0, refresh, new MeasuredHeights(vp.from, heights));
             }
             if (oracle.heightChanged)
                 result |= 2 /* UpdateFlag.Height */;
@@ -9611,7 +9636,8 @@ class DOMChange {
         this.bounds = null;
         this.text = "";
         let { impreciseHead: iHead, impreciseAnchor: iAnchor } = view.docView;
-        if (start > -1 && !view.state.readOnly && (this.bounds = view.docView.domBoundsAround(start, end, 0))) {
+        if (view.state.readOnly && start > -1) ;
+        else if (start > -1 && (this.bounds = view.docView.domBoundsAround(start, end, 0))) {
             let selPoints = iHead || iAnchor ? [] : selectionPoints(view);
             let reader = new DOMReader(selPoints, view.state);
             reader.readRange(this.bounds.startDOM, this.bounds.endDOM);
@@ -9905,7 +9931,8 @@ class DOMObserver {
         this.onScroll = this.onScroll.bind(this);
         if (typeof ResizeObserver == "function") {
             this.resize = new ResizeObserver(() => {
-                if (this.view.docView.lastUpdate < Date.now() - 75)
+                var _a;
+                if (((_a = this.view.docView) === null || _a === void 0 ? void 0 : _a.lastUpdate) < Date.now() - 75)
                     this.onResize();
             });
             this.resize.observe(view.scrollDOM);
@@ -11441,7 +11468,8 @@ function drawSelection(config = {}) {
     return [
         selectionConfig.of(config),
         drawSelectionPlugin,
-        hideNativeSelection
+        hideNativeSelection,
+        nativeSelectionHidden.of(true)
     ];
 }
 class Piece {
@@ -14434,8 +14462,13 @@ class Language {
     The [language data](https://codemirror.net/6/docs/ref/#state.EditorState.languageDataAt) facet
     used for this language.
     */
-    data, parser, extraExtensions = []) {
+    data, parser, extraExtensions = [], 
+    /**
+    A language name.
+    */
+    name = "") {
         this.data = data;
+        this.name = name;
         // Kludge to define EditorState.tree as a debugging helper,
         // without the EditorState package actually knowing about
         // languages and lezer trees.
@@ -14523,8 +14556,8 @@ A subclass of [`Language`](https://codemirror.net/6/docs/ref/#language.Language)
 parsers.
 */
 class LRLanguage extends Language {
-    constructor(data, parser) {
-        super(data, parser);
+    constructor(data, parser, name) {
+        super(data, parser, [], name);
         this.parser = parser;
     }
     /**
@@ -14534,14 +14567,14 @@ class LRLanguage extends Language {
         let data = defineLanguageFacet(spec.languageData);
         return new LRLanguage(data, spec.parser.configure({
             props: [languageDataProp.add(type => type.isTop ? data : undefined)]
-        }));
+        }), spec.name);
     }
     /**
     Create a new instance of this language with a reconfigured
-    version of its parser.
+    version of its parser and optionally a new name.
     */
-    configure(options) {
-        return new LRLanguage(this.data, this.parser.configure(options));
+    configure(options, name) {
+        return new LRLanguage(this.data, this.parser.configure(options), name || this.name);
     }
     get allowsNesting() { return this.parser.hasWrappers(); }
 }
@@ -14842,14 +14875,14 @@ class LanguageState {
         // state updates with parse work beyond the viewport.
         let upto = this.context.treeLen == tr.startState.doc.length ? undefined
             : Math.max(tr.changes.mapPos(this.context.treeLen), newCx.viewport.to);
-        if (!newCx.work(20 /* Apply */, upto))
+        if (!newCx.work(20 /* Work.Apply */, upto))
             newCx.takeTree();
         return new LanguageState(newCx);
     }
     static init(state) {
-        let vpTo = Math.min(3000 /* InitViewport */, state.doc.length);
+        let vpTo = Math.min(3000 /* Work.InitViewport */, state.doc.length);
         let parseState = ParseContext.create(state.facet(language).parser, state, { from: 0, to: vpTo });
-        if (!parseState.work(20 /* Apply */, vpTo))
+        if (!parseState.work(20 /* Work.Apply */, vpTo))
             parseState.takeTree();
         return new LanguageState(parseState);
     }
@@ -14866,14 +14899,14 @@ Language.state = /*@__PURE__*/StateField.define({
     }
 });
 let requestIdle = (callback) => {
-    let timeout = setTimeout(() => callback(), 500 /* MaxPause */);
+    let timeout = setTimeout(() => callback(), 500 /* Work.MaxPause */);
     return () => clearTimeout(timeout);
 };
 if (typeof requestIdleCallback != "undefined")
     requestIdle = (callback) => {
         let idle = -1, timeout = setTimeout(() => {
-            idle = requestIdleCallback(callback, { timeout: 500 /* MaxPause */ - 100 /* MinPause */ });
-        }, 100 /* MinPause */);
+            idle = requestIdleCallback(callback, { timeout: 500 /* Work.MaxPause */ - 100 /* Work.MinPause */ });
+        }, 100 /* Work.MinPause */);
         return () => idle < 0 ? clearTimeout(timeout) : cancelIdleCallback(idle);
     };
 const isInputPending = typeof navigator != "undefined" && ((_a = navigator.scheduling) === null || _a === void 0 ? void 0 : _a.isInputPending)
@@ -14896,7 +14929,7 @@ const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
             this.scheduleWork();
         if (update.docChanged) {
             if (this.view.hasFocus)
-                this.chunkBudget += 50 /* ChangeBonus */;
+                this.chunkBudget += 50 /* Work.ChangeBonus */;
             this.scheduleWork();
         }
         this.checkAsyncSchedule(cx);
@@ -14912,19 +14945,19 @@ const parseWorker = /*@__PURE__*/ViewPlugin.fromClass(class ParseWorker {
         this.working = null;
         let now = Date.now();
         if (this.chunkEnd < now && (this.chunkEnd < 0 || this.view.hasFocus)) { // Start a new chunk
-            this.chunkEnd = now + 30000 /* ChunkTime */;
-            this.chunkBudget = 3000 /* ChunkBudget */;
+            this.chunkEnd = now + 30000 /* Work.ChunkTime */;
+            this.chunkBudget = 3000 /* Work.ChunkBudget */;
         }
         if (this.chunkBudget <= 0)
             return; // No more budget
         let { state, viewport: { to: vpTo } } = this.view, field = state.field(Language.state);
-        if (field.tree == field.context.tree && field.context.isDone(vpTo + 100000 /* MaxParseAhead */))
+        if (field.tree == field.context.tree && field.context.isDone(vpTo + 100000 /* Work.MaxParseAhead */))
             return;
-        let endTime = Date.now() + Math.min(this.chunkBudget, 100 /* Slice */, deadline && !isInputPending ? Math.max(25 /* MinSlice */, deadline.timeRemaining() - 5) : 1e9);
+        let endTime = Date.now() + Math.min(this.chunkBudget, 100 /* Work.Slice */, deadline && !isInputPending ? Math.max(25 /* Work.MinSlice */, deadline.timeRemaining() - 5) : 1e9);
         let viewportFirst = field.context.treeLen < vpTo && state.doc.length > vpTo + 1000;
         let done = field.context.work(() => {
             return isInputPending && isInputPending() || Date.now() > endTime;
-        }, vpTo + (viewportFirst ? 0 : 100000 /* MaxParseAhead */));
+        }, vpTo + (viewportFirst ? 0 : 100000 /* Work.MaxParseAhead */));
         this.chunkBudget -= Date.now() - now;
         if (done || this.chunkBudget <= 0) {
             field.context.takeTree();
@@ -14962,7 +14995,14 @@ current language on a state.
 */
 const language = /*@__PURE__*/Facet.define({
     combine(languages) { return languages.length ? languages[0] : null; },
-    enables: [Language.state, parseWorker]
+    enables: language => [
+        Language.state,
+        parseWorker,
+        EditorView.contentAttributes.compute([language], state => {
+            let lang = state.facet(language);
+            return lang && lang.name ? { "data-language": lang.name } : {};
+        })
+    ]
 });
 /**
 This class bundles a [language](https://codemirror.net/6/docs/ref/#language.Language) with an
@@ -14995,8 +15035,10 @@ class LanguageSupport {
 
 /**
 Facet that defines a way to provide a function that computes the
-appropriate indentation depth at the start of a given line, or
-`null` to indicate no appropriate indentation could be determined.
+appropriate indentation depth, as a column number (see
+[`indentString`](https://codemirror.net/6/docs/ref/#language.indentString)), at the start of a given
+line, or `null` to indicate no appropriate indentation could be
+determined.
 */
 const indentService = /*@__PURE__*/Facet.define();
 /**
@@ -15041,12 +15083,13 @@ function indentString(state, cols) {
     return result;
 }
 /**
-Get the indentation at the given position. Will first consult any
-[indent services](https://codemirror.net/6/docs/ref/#language.indentService) that are registered,
-and if none of those return an indentation, this will check the
-syntax tree for the [indent node prop](https://codemirror.net/6/docs/ref/#language.indentNodeProp)
-and use that if found. Returns a number when an indentation could
-be determined, and null otherwise.
+Get the indentation, as a column number, at the given position.
+Will first consult any [indent services](https://codemirror.net/6/docs/ref/#language.indentService)
+that are registered, and if none of those return an indentation,
+this will check the syntax tree for the [indent node
+prop](https://codemirror.net/6/docs/ref/#language.indentNodeProp) and use that if found. Returns a
+number when an indentation could be determined, and null
+otherwise.
 */
 function getIndentation(context, pos) {
     if (context instanceof EditorState)
@@ -15156,8 +15199,9 @@ class IndentContext {
 /**
 A syntax tree node prop used to associate indentation strategies
 with node types. Such a strategy is a function from an indentation
-context to a column number or null, where null indicates that no
-definitive indentation can be determined.
+context to a column number (see also
+[`indentString`](https://codemirror.net/6/docs/ref/#language.indentString)) or null, where null
+indicates that no definitive indentation can be determined.
 */
 const indentNodeProp = /*@__PURE__*/new NodeProp();
 // Compute the indentation for a given position from the syntax tree.
@@ -15338,7 +15382,12 @@ A highlight style associates CSS styles with higlighting
 [tags](https://lezer.codemirror.net/docs/ref#highlight.Tag).
 */
 class HighlightStyle {
-    constructor(spec, options) {
+    constructor(
+    /**
+    The tag styles used to create this highlight style.
+    */
+    specs, options) {
+        this.specs = specs;
         let modSpec;
         function def(spec) {
             let cls = StyleModule.newName();
@@ -15349,7 +15398,7 @@ class HighlightStyle {
         const scopeOpt = options.scope;
         this.scope = scopeOpt instanceof Language ? (type) => type.prop(languageDataProp) == scopeOpt.data
             : scopeOpt ? (type) => type == scopeOpt : undefined;
-        this.style = tagHighlighter(spec.map(style => ({
+        this.style = tagHighlighter(specs.map(style => ({
             tag: style.tag,
             class: style.class || def(Object.assign({}, style, { tag: null }))
         })), {
@@ -18046,7 +18095,7 @@ function readToken(data, input, stack, group) {
             }
         let next = input.next, low = 0, high = data[state + 2];
         // Special case for EOF
-        if (input.next < 0 && high > low && data[accEnd + high * 3 - 3] == 65535 /* End */) {
+        if (input.next < 0 && high > low && data[accEnd + high * 3 - 3] == 65535 /* End */ && data[accEnd + high * 3 - 3] == 65535 /* End */) {
             state = data[accEnd + high * 3 - 1];
             continue scan;
         }
@@ -18054,7 +18103,7 @@ function readToken(data, input, stack, group) {
         for (; low < high;) {
             let mid = (low + high) >> 1;
             let index = accEnd + mid + (mid << 1);
-            let from = data[index], to = data[index + 1];
+            let from = data[index], to = data[index + 1] || 0x10000;
             if (next < from)
                 high = mid;
             else if (next >= to)
@@ -19031,6 +19080,7 @@ parser](https://github.com/lezer-parser/cpp), extended with
 highlighting and indentation information.
 */
 const cppLanguage = /*@__PURE__*/LRLanguage.define({
+    name: "cpp",
     parser: /*@__PURE__*/parser.configure({
         props: [
             /*@__PURE__*/indentNodeProp.add({
@@ -19038,7 +19088,7 @@ const cppLanguage = /*@__PURE__*/LRLanguage.define({
                 TryStatement: /*@__PURE__*/continuedIndent({ except: /^\s*({|catch)\b/ }),
                 LabeledStatement: flatIndent,
                 CaseStatement: context => context.baseIndent + context.unit,
-                BlockComment: () => -1,
+                BlockComment: () => null,
                 CompoundStatement: /*@__PURE__*/delimitedIndent({ closing: "}" }),
                 Statement: /*@__PURE__*/continuedIndent({ except: /^{/ })
             }),
@@ -19050,7 +19100,8 @@ const cppLanguage = /*@__PURE__*/LRLanguage.define({
     }),
     languageData: {
         commentTokens: { line: "//", block: { open: "/*", close: "*/" } },
-        indentOnInput: /^\s*(?:case |default:|\{|\})$/
+        indentOnInput: /^\s*(?:case |default:|\{|\})$/,
+        closeBrackets: { stringPrefixes: ["L", "u", "U", "u8", "LR", "UR", "uR", "u8R", "R"] }
     }
 });
 /**
