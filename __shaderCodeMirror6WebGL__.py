@@ -35,7 +35,7 @@ class View(ui.View):
     self.set_reload_btn()
 
   def will_close(self):
-    self.get_shader_code()
+    #self.get_shader_code()
     self.refresh_webview()
 
   def set_reload_btn(self):
@@ -48,7 +48,7 @@ class View(ui.View):
     return ui.ButtonItem(image=btn_icon)
 
   def reload_webview(self):
-    self.get_shader_code()
+    #self.get_shader_code()
     self.wv.reload()
 
   @ui.in_background
