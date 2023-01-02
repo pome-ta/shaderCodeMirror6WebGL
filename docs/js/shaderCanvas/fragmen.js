@@ -732,7 +732,10 @@ void main(){
     );
     this.uniLocation.mouse = this.gl.getUniformLocation(this.program, mouse);
     this.uniLocation.time = this.gl.getUniformLocation(this.program, nowTime);
-    this.uniLocation.u_time = this.gl.getUniformLocation(this.program, u_nowTime);
+    this.uniLocation.u_time = this.gl.getUniformLocation(
+      this.program,
+      u_nowTime
+    );
     this.uniLocation.frame = this.gl.getUniformLocation(this.program, frame);
     this.uniLocation.sound = this.gl.getUniformLocation(this.program, sound);
     switch (this.mode) {
@@ -818,7 +821,10 @@ void main(){
     this.gl.uniform1f(this.uniLocation.u_time, this.nowTime);
     this.gl.uniform1f(this.uniLocation.frame, this.frameCount);
     this.gl.uniform2fv(this.uniLocation.resolution, [this.width, this.height]);
-    this.gl.uniform2fv(this.uniLocation.u_resolution, [this.width, this.height]);
+    this.gl.uniform2fv(this.uniLocation.u_resolution, [
+      this.width,
+      this.height,
+    ]);
     this.gl.uniform1f(this.uniLocation.sound, this.frequency);
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
 
