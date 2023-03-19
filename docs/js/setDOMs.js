@@ -98,6 +98,10 @@ export const modeSelect = document.createElement('select');
 modeSelect.id = 'mode-select';
 modeSelect.style.background = '#1c1c1e80';
 
+export const realtimeSwitch = document.createElement('input');
+realtimeSwitch.id = 'realTimeRender';
+realtimeSwitch.type = 'checkbox';
+
 const modeOptions = [
   'classic',
   'geek',
@@ -112,6 +116,7 @@ const modeOptions = [
   'geeker (MRT)',
   'geekest (MRT)',
 ];
+
 modeOptions.forEach((option, index) => {
   const optionElement = document.createElement('option');
   optionElement.value = index;

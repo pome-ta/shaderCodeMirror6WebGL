@@ -16,6 +16,7 @@ import {
   statusLogDiv,
   logText,
   modeSelect,
+  realtimeSwitch,
   accessoryDiv,
   buttonArea,
 } from './setDOMs.js';
@@ -67,7 +68,8 @@ function onChange(docs) {
 const bgRectangleClassName = 'cm-bgRectangle';
 const bgRectangleMark = Decoration.mark({ class: bgRectangleClassName });
 const bgRectangleTheme = EditorView.baseTheme({
-  '.cm-bgRectangle': { backgroundColor: '#232323aa' },
+  // '.cm-bgRectangle': { backgroundColor: '#232323aa' },
+  '.cm-bgRectangle': { backgroundColor: '#232323dd' },
 });
 
 const bgRectEffect = {
@@ -180,7 +182,7 @@ logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
-//statusLogDiv.appendChild(modeSelect);
+statusLogDiv.appendChild(realtimeSwitch);
 
 accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
@@ -246,6 +248,12 @@ modeSelect.addEventListener('change', () => {
   fragmen.mode = parseInt(modeSelect.value);
   currentMode = fragmen.mode;
   onChange(editor.state.doc.toString());
+});
+
+realtimeSwitch.addEventListener('change', () => {
+  // console.log(realtimeSwitch.value);
+  // console.log(fragmen.run);
+  fragmen.run = !fragmen.run;
 });
 
 hasTouchScreen() ? mobileEventListeners(editor) : null;
