@@ -182,7 +182,8 @@ logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
-statusLogDiv.appendChild(realtimeSwitch);
+// statusLogDiv.appendChild(realtimeSwitch);
+statusLogDiv.appendChild(modeSelect);
 
 accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
