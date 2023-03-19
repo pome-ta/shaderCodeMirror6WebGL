@@ -1,3 +1,18 @@
+# 📝 2023/03/19
+
+ずっとレンダーする必要もないから、トルグでレンダーを止めることをとりあえずでしている。
+
+```JavaScripit
+realtimeSwitch.addEventListener('change', () => {
+  // console.log(realtimeSwitch.value);
+  // console.log(fragmen.run);
+  fragmen.run = !fragmen.run;
+});
+```
+
+チェックボックスを戻しても、読み込み回復はせず。文字入力を起点に再度毎度レンダーが始まる
+良い感じの処理をみつけていきたい。
+
 # 📝 2023/01/03
 
 ## update
