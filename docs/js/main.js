@@ -182,8 +182,8 @@ logText.textContent = ' ● ready';
 logText.style.color = logColor['warn'];
 
 statusLogDiv.appendChild(logText);
-// statusLogDiv.appendChild(realtimeSwitch);
-statusLogDiv.appendChild(modeSelect);
+statusLogDiv.appendChild(realtimeSwitch);
+// statusLogDiv.appendChild(modeSelect);
 
 accessoryDiv.appendChild(statusLogDiv);
 accessoryDiv.appendChild(buttonArea);
@@ -254,7 +254,18 @@ modeSelect.addEventListener('change', () => {
 realtimeSwitch.addEventListener('change', () => {
   // console.log(realtimeSwitch.value);
   // console.log(fragmen.run);
-  fragmen.run = !fragmen.run;
+  // fragmen.run = !fragmen.run;
+  // console.log('---');
+  // console.log(realtimeSwitch.checked);
+  // console.log(fragmen.run);
+  // if (realtimeSwitch.checked) {
+  //   fragmen.reset();
+  // } else {
+  //   fragmen.run = false;
+  // }
+  // fragmen.animation = !fragmen.animation;
+  fragmen.setAnimation(realtimeSwitch.checked);
+  realtimeSwitch.checked ? fragmen.draw() : null;
 });
 
 hasTouchScreen() ? mobileEventListeners(editor) : null;

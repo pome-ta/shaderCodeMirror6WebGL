@@ -101,6 +101,7 @@ modeSelect.style.background = '#1c1c1e80';
 export const realtimeSwitch = document.createElement('input');
 realtimeSwitch.id = 'realTimeRender';
 realtimeSwitch.type = 'checkbox';
+realtimeSwitch.checked = true;
 
 const modeOptions = [
   'classic',
