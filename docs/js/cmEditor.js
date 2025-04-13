@@ -38,8 +38,8 @@ editorDiv.style.width = '100%';
 const myTheme = EditorView.theme(
   {
     '&': {
-      // fontSize: '0.72rem',
-      fontSize: '1rem',
+      fontSize: '0.72rem',
+      // fontSize: '1rem',
     },
     '.cm-scroller': {
       fontFamily:
