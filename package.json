@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "private": true,
+
   "scripts": {
     "start": "node index.js",
     "build": "rollup -c"
@@ -12,8 +13,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "express": "latest",
-    "rollup": "^2.77.2"
+    "express": "5.0.0",
+    "rollup": "4.22.4"
   },
   "dependencies": {
     "codemirror": "latest",

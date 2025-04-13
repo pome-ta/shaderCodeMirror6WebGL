@@ -3031,7 +3031,7 @@ RangeValue.prototype.mapMode = MapMode.TrackDel;
 /**
 A range associates a value with a range of positions.
 */
-class Range$1 {
+let Range$1 = class Range {
     constructor(
     /**
     The range's start position.
@@ -3053,9 +3053,9 @@ class Range$1 {
     @internal
     */
     static create(from, to, value) {
-        return new Range$1(from, to, value);
+        return new Range(from, to, value);
     }
-}
+};
 function cmpRange(a, b) {
     return a.from - b.from || a.value.startSide - b.value.startSide;
 }
@@ -4122,7 +4122,6 @@ var shift = {
 };
 
 var chrome$1 = typeof navigator != "undefined" && /Chrome\/(\d+)/.exec(navigator.userAgent);
-typeof navigator != "undefined" && /Gecko\/\d+/.test(navigator.userAgent);
 var mac = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
 var ie$1 = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
 var brokenModifierNames = mac || chrome$1 && +chrome$1[1] < 57;
@@ -12295,8 +12294,6 @@ function gutters(config) {
     let result = [
         gutterView,
     ];
-    if (config && config.fixed === false)
-        result.push(unfixGutters.of(true));
     return result;
 }
 const gutterView = /*@__PURE__*/ViewPlugin.fromClass(class {
@@ -16741,7 +16738,7 @@ function toMatchingBracket(state, dispatch, extend) {
             return range;
         found = true;
         let head = matching.start.from == range.head ? matching.end.to : matching.end.from;
-        return extend ? EditorSelection.range(range.anchor, head) : EditorSelection.cursor(head);
+        return EditorSelection.cursor(head);
     });
     if (!found)
         return false;
@@ -16752,7 +16749,7 @@ function toMatchingBracket(state, dispatch, extend) {
 Move the selection to the bracket matching the one it is currently
 on, if any.
 */
-const cursorMatchingBracket = ({ state, dispatch }) => toMatchingBracket(state, dispatch, false);
+const cursorMatchingBracket = ({ state, dispatch }) => toMatchingBracket(state, dispatch);
 function extendSel(view, how) {
     let selection = updateSel(view.state.selection, range => {
         let head = how(range);
