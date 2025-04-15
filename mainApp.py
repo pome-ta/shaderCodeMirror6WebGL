@@ -99,7 +99,6 @@ class WebViewController(UIViewController):
 
     wkWebView.loadFileURL_allowingReadAccessToURL_(self.indexPath,
                                                    self.folderPath)
-
     '''
     # todo: (.js 等での) `title` 変化を監視
     wkWebView.addObserver_forKeyPath_options_context_(

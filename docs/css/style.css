@@ -20,7 +20,9 @@ html {
 
 body {
   max-width: 960px;
-  height: 100vh;
+  /*height: 100vh;*/
   height: 100dvh;
+  /*height: 100lvh;*/
+  /*height: 100svh;*/
   margin: auto;
 }
