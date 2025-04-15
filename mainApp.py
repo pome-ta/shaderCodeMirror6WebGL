@@ -170,9 +170,16 @@ class WebViewController(UIViewController):
 
     javaScriptString = '''
     (function getShaderCode() {
-      const logDiv = document.getElementById('logDiv');
-      const textContent = logDiv.textContent;
-      return textContent;
+       const root = document.querySelector('#editor-div');
+       const cme = Array.from(root.childNodes).find((cme) => cme);
+       const cms = Array.from(cme.childNodes).find((cms) =>
+         cms.classList.contains('cm-scroller')
+       );
+       const cmc = Array.from(cms.childNodes).find((cmc) =>
+         cmc.classList.contains('cm-content')
+       );
+       const v = cmc.cmView.view.state.doc.toString();
+       return v;
     }());
     '''
 
