@@ -1,71 +1,72 @@
 import ctypes
 from pathlib import Path
 from typing import Union
+import datetime
 
 from pyrubicon.objc.api import ObjCClass, ObjCInstance, Block
 from pyrubicon.objc.api import objc_method, objc_property, at
-from pyrubicon.objc.runtime import send_super, objc_id, load_library, SEL
-from pyrubicon.objc.types import CGRect
+from pyrubicon.objc.runtime import send_super, objc_id, SEL
 
 from rbedge.enumerations import (
   NSURLRequestCachePolicy,
   UIControlEvents,
   UIBarButtonSystemItem,
+  UIBarButtonItemStyle,
+  NSTextAlignment,
+  UIScrollViewKeyboardDismissMode,
   NSKeyValueObservingOptions,
 )
+from rbedge.globalVariables import UIFontTextStyle
+from rbedge.makeZero import CGRectZero
 from rbedge.functions import NSStringFromClass
 from rbedge import pdbr
-
-CoreGraphics = load_library('CoreGraphics')
-CGRectZero = CGRect.in_dll(CoreGraphics, 'CGRectZero')
 
 UIViewController = ObjCClass('UIViewController')
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
 UIColor = ObjCClass('UIColor')
 
 NSURL = ObjCClass('NSURL')
-
 WKWebView = ObjCClass('WKWebView')
 WKWebViewConfiguration = ObjCClass('WKWebViewConfiguration')
 WKWebsiteDataStore = ObjCClass('WKWebsiteDataStore')
 
 UIRefreshControl = ObjCClass('UIRefreshControl')
 UIBarButtonItem = ObjCClass('UIBarButtonItem')
+UIImage = ObjCClass('UIImage')
+UILabel = ObjCClass('UILabel')
+UIFont = ObjCClass('UIFont')
 
 
 class WebViewController(UIViewController):
 
   wkWebView: WKWebView = objc_property()
-  indexPath: NSURL = objc_property()
-  folderPath: NSURL = objc_property()
-  savePath: Path = objc_property(ctypes.py_object)
+  titleLabel: UILabel = objc_property()
+
+  indexPathObject: Path = objc_property(ctypes.py_object)
+  savePathObject: Path = objc_property(ctypes.py_object)
 
   @objc_method
   def dealloc(self):
     # xxx: 呼ばない-> `send_super(__class__, self, 'dealloc')`
-    #self.wkWebView.removeObserver_forKeyPath_(self, at('title'))
     #print(f'- {NSStringFromClass(__class__)}: dealloc')
-    pass
+    self.wkWebView.removeObserver_forKeyPath_(self, at('title'))
 
   @objc_method
   def init(self):
     send_super(__class__, self, 'init')
     #print(f'\t{NSStringFromClass(__class__)}: init')
-    self.savePath = None
+    self.indexPathObject = None
+    self.savePathObject = None
     return self
 
   @objc_method
   def initWithIndexPath_(self, index_path: ctypes.py_object):
-    self.init()  #send_super(__class__, self, 'init')
+    self.init()
     #print(f'\t{NSStringFromClass(__class__)}: initWithTargetURL_')
-
-    if not ((target_path := Path(index_path)).exists()):
+    if not (Path(index_path).exists()):
       return self
 
-    fileURLWithPath = NSURL.fileURLWithPath_isDirectory_
-
-    self.indexPath = fileURLWithPath(str(target_path), False)
-    self.folderPath = fileURLWithPath(str(target_path.parent), True)
+    self.indexPathObject = index_path
 
     return self
 
@@ -73,6 +74,46 @@ class WebViewController(UIViewController):
   def loadView(self):
     send_super(__class__, self, 'loadView')
     #print(f'\t{NSStringFromClass(__class__)}: loadView')
+    # --- toolbar set up
+    self.navigationController.setNavigationBarHidden_animated_(True, True)
+    self.navigationController.setToolbarHidden_animated_(False, True)
+
+    saveUpdateImage = UIImage.systemImageNamed_('circle.badge.checkmark')
+    saveUpdateButtonItem = UIBarButtonItem.alloc().initWithImage(
+      saveUpdateImage,
+      style=UIBarButtonItemStyle.plain,
+      target=self,
+      action=SEL('saveFileAction:'))
+
+    closeImage = UIImage.systemImageNamed_('multiply.circle')
+    closeButtonItem = UIBarButtonItem.alloc().initWithImage(
+      closeImage,
+      style=UIBarButtonItemStyle.plain,
+      target=self.navigationController,
+      action=SEL('doneButtonTapped:'))
+
+    titleLabel = UILabel.new()
+    titleLabel.setTextAlignment_(NSTextAlignment.center)
+    titleLabel.setFont_(
+      UIFont.preferredFontForTextStyle_(UIFontTextStyle.caption1))
+
+    titleButtonItem = UIBarButtonItem.alloc().initWithCustomView_(titleLabel)
+
+    flexibleSpace = UIBarButtonSystemItem.flexibleSpace
+    flexibleSpaceBarButtonItem = UIBarButtonItem.alloc(
+    ).initWithBarButtonSystemItem(flexibleSpace, target=None, action=None)
+
+    toolbarButtonItems = [
+      saveUpdateButtonItem,
+      flexibleSpaceBarButtonItem,
+      titleButtonItem,
+      flexibleSpaceBarButtonItem,
+      closeButtonItem,
+    ]
+
+    self.setToolbarItems_animated_(toolbarButtonItems, True)
+
+    # --- WKWebView set up
     webConfiguration = WKWebViewConfiguration.new()
     websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
 
@@ -85,25 +126,20 @@ class WebViewController(UIViewController):
 
     #wkWebView.uiDelegate = self
     wkWebView.navigationDelegate = self
-
+    wkWebView.scrollView.delegate = self
     wkWebView.scrollView.bounces = True
-
-    refreshButtonItem = UIBarButtonItem.alloc().initWithBarButtonSystemItem(
-      UIBarButtonSystemItem.refresh, target=self, action=SEL('reLoadWebView:'))
-    self.navigationItem.rightBarButtonItem = refreshButtonItem
+    wkWebView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.interactive
 
     refreshControl = UIRefreshControl.new()
     refreshControl.addTarget_action_forControlEvents_(
       self, SEL('refreshWebView:'), UIControlEvents.valueChanged)
     wkWebView.scrollView.refreshControl = refreshControl
 
-    wkWebView.loadFileURL_allowingReadAccessToURL_(self.indexPath,
-                                                   self.folderPath)
-    '''
-    # todo: (.js 等での) `title` 変化を監視
+    # todo: (.js 等での) `title` 変化を監視
     wkWebView.addObserver_forKeyPath_options_context_(
       self, at('title'), NSKeyValueObservingOptions.new, None)
-    '''
+
+    self.titleLabel = titleLabel
     self.wkWebView = wkWebView
 
   @objc_method
@@ -114,24 +150,24 @@ class WebViewController(UIViewController):
     # --- Navigation
     self.navigationItem.title = NSStringFromClass(__class__) if (
       title := self.navigationItem.title) is None else title
+    self.view.backgroundColor = UIColor.systemFillColor()
+
+    self.loadFileIndexPath()
 
     # --- Layout
     self.view.addSubview_(self.wkWebView)
     self.wkWebView.translatesAutoresizingMaskIntoConstraints = False
 
-    #areaLayoutGuide = self.view.safeAreaLayoutGuide
-    #areaLayoutGuide = self.view.layoutMarginsGuide
-    areaLayoutGuide = self.view
+    layoutGuide = self.view.safeAreaLayoutGuide
 
     NSLayoutConstraint.activateConstraints_([
-      self.wkWebView.centerXAnchor.constraintEqualToAnchor_(
-        areaLayoutGuide.centerXAnchor),
-      self.wkWebView.centerYAnchor.constraintEqualToAnchor_(
-        areaLayoutGuide.centerYAnchor),
-      self.wkWebView.widthAnchor.constraintEqualToAnchor_multiplier_(
-        areaLayoutGuide.widthAnchor, 1.0),
-      self.wkWebView.heightAnchor.constraintEqualToAnchor_multiplier_(
-        areaLayoutGuide.heightAnchor, 1.0),
+      self.wkWebView.topAnchor.constraintEqualToAnchor_(layoutGuide.topAnchor),
+      self.wkWebView.bottomAnchor.constraintEqualToAnchor_(
+        layoutGuide.bottomAnchor),
+      self.wkWebView.leftAnchor.constraintEqualToAnchor_(
+        layoutGuide.leftAnchor),
+      self.wkWebView.rightAnchor.constraintEqualToAnchor_(
+        layoutGuide.rightAnchor),
     ])
 
   @objc_method
@@ -165,36 +201,7 @@ class WebViewController(UIViewController):
                argtypes=[
                  ctypes.c_bool,
                ])
-    # print(f'\t{NSStringFromClass(__class__)}: viewWillDisappear_')
-
-    if self.savePath is None or not (self.savePath.exists()):
-      return
-
-    javaScriptString = '''
-    (function getShaderCode() {
-       const root = document.querySelector('#editor-div');
-       const cme = Array.from(root.childNodes).find((cme) => cme);
-       const cms = Array.from(cme.childNodes).find((cms) =>
-         cms.classList.contains('cm-scroller')
-       );
-       const cmc = Array.from(cms.childNodes).find((cmc) =>
-         cmc.classList.contains('cm-content')
-       );
-       const v = cmc.cmView.view.state.doc.toString();
-       return v;
-    }());
-    '''
-
-    def completionHandler(object_id, error_id):
-      objc_instance = ObjCInstance(object_id)
-      self.savePath.write_text(str(objc_instance), encoding='utf-8')
-
-    self.wkWebView.evaluateJavaScript_completionHandler_(
-      at(javaScriptString),
-      Block(completionHandler, None, *[
-        objc_id,
-        objc_id,
-      ]))
+    #print(f'\t{NSStringFromClass(__class__)}: viewWillDisappear_')
 
   @objc_method
   def viewDidDisappear_(self, animated: bool):
@@ -212,31 +219,11 @@ class WebViewController(UIViewController):
     send_super(__class__, self, 'didReceiveMemoryWarning')
     print(f'{__class__}: didReceiveMemoryWarning')
 
-  @objc_method
-  def reLoadWebView_(self, sender):
-    self.wkWebView.reload()
-    #self.wkWebView.reloadFromOrigin()
-
-  @objc_method
-  def refreshWebView_(self, sender):
-    self.reLoadWebView_(sender)
-    sender.endRefreshing()
-
-  '''
-  @objc_method
-  def observeValueForKeyPath_ofObject_change_context_(self, keyPath, objct,
-                                                      change, context):
-    title = self.wkWebView.title
-    #self.navigationItem.prompt = str(title)
-    self.navigationItem.title = str(title)
-  '''
-
   # --- WKUIDelegate
   # --- WKNavigationDelegate
   @objc_method
   def webView_didCommitNavigation_(self, webView, navigation):
     # 遷移開始時
-    #print('didCommitNavigation')
     pass
 
   @objc_method
@@ -256,14 +243,6 @@ class WebViewController(UIViewController):
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
     # ページ読み込みが完了した時
-    #print('didFinishNavigation')
-    #self.navigationItem.title = str(webView.title)
-    #self.navigationItem.prompt = str(webView.title)
-    title = webView.title
-    self.navigationItem.title = str(title)
-    #self.navigationItem.setPrompt_(str(title))
-    # todo: observe でtitle 変化の監視をしてるため不要
-    #pdbr.state(self.navigationItem)
     pass
 
   @objc_method
@@ -276,8 +255,86 @@ class WebViewController(UIViewController):
   @objc_method
   def webView_didStartProvisionalNavigation_(self, webView, navigation):
     # ページ読み込みが開始された時
-    #print('didStartProvisionalNavigation')
     pass
+
+  # --- private
+  @objc_method
+  def loadFileIndexPath(self):
+    #fileURLWithPath = NSURL.fileURLWithPath_isDirectory_
+    loadFileURL = NSURL.fileURLWithPath_isDirectory_(str(self.indexPathObject),
+                                                     False)
+    allowingReadAccessToURL = NSURL.fileURLWithPath_isDirectory_(
+      str(self.indexPathObject.parent), True)
+
+    self.wkWebView.loadFileURL_allowingReadAccessToURL_(
+      loadFileURL, allowingReadAccessToURL)
+
+  @objc_method
+  def observeValueForKeyPath_ofObject_change_context_(self, keyPath, objct,
+                                                      change, context):
+    title = self.wkWebView.title
+    self.titleLabel.setText_(str(title))
+    self.titleLabel.sizeToFit()
+
+  @objc_method
+  def doneButtonTapped_(self, sender):
+    #self.visibleViewController.dismissViewControllerAnimated_completion_(True, None)
+    self.navigationController.doneButtonTapped(sender)
+
+  @objc_method
+  def refreshWebView_(self, sender):
+    self.wkWebView.reload()
+    #self.wkWebView.reloadFromOrigin()
+    sender.endRefreshing()
+
+  @objc_method
+  def saveFileAction_(self, sender):
+    if self.savePathObject is None or not (self.savePathObject.exists()):
+      return
+
+    javaScriptString = '''
+    (function getShaderCode() {
+       const root = document.querySelector('#editor-div');
+       const cme = Array.from(root.childNodes).find((cme) => cme);
+       const cms = Array.from(cme.childNodes).find((cms) =>
+         cms.classList.contains('cm-scroller')
+       );
+       const cmc = Array.from(cms.childNodes).find((cmc) =>
+         cmc.classList.contains('cm-content')
+       );
+       const v = cmc.cmView.view.state.doc.toString();
+       return v;
+    }());
+    '''
+
+    def completionHandler(object_id, error_id):
+      objc_instance = ObjCInstance(object_id)
+      self.savePathObject.write_text(str(objc_instance), encoding='utf-8')
+
+    self.wkWebView.evaluateJavaScript_completionHandler_(
+      at(javaScriptString),
+      Block(completionHandler, None, *[
+        objc_id,
+        objc_id,
+      ]))
+
+    try:
+      import editor
+    except (ModuleNotFoundError, LookupError):
+      return
+
+    def open_file(url: Path, tab: bool):
+      editor.open_file(f'{url.resolve()}', tab)
+
+    # todo: save したfile editor 上のバッファを最新にする
+    open_file(self.savePathObject, True)
+    dummy_path = Path(editor.__file__)
+    while _path := dummy_path:
+      if (dummy_path := _path).name == 'Pythonista3.app':
+        break
+      dummy_path = _path.parent
+    open_file(Path('./', dummy_path, 'Welcome3.md'), False)
+    open_file(self.savePathObject, False)
 
 
 if __name__ == '__main__':
@@ -288,7 +345,7 @@ if __name__ == '__main__':
   save_path = Path('./docs/shaders/fs/fsDev300es.js')
 
   main_vc = WebViewController.alloc().initWithIndexPath_(index_path)
-  #main_vc.savePath = save_path
+  main_vc.savePathObject = save_path
 
   presentation_style = UIModalPresentationStyle.fullScreen
   #presentation_style = UIModalPresentationStyle.pageSheet

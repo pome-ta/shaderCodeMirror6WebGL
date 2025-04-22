@@ -32,6 +32,7 @@ class UIBarButtonSystemItem:
   done: int = 0
   cancel: int = 1
   edit: int = 2
+  save: int = 3
   add: int = 4
   flexibleSpace: int = 5
   fixedSpace: int = 6
@@ -43,6 +44,7 @@ class UIBarButtonSystemItem:
   search: int = 12
   refresh: int = 13
   stop: int = 14
+  camera: int = 15
   trash: int = 16
   play: int = 17
   pause: int = 18
@@ -52,6 +54,15 @@ class UIBarButtonSystemItem:
   redo: int = 22
   pageCurl: int = 23  # Deprecated
   close: int = 24
+  writingTools: int = 25
+
+
+# ref: [UIBarButtonItemStyle | Apple Developer Documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/style-swift.enum?language=objc)
+class UIBarButtonItemStyle:
+  # ref: [UIBarButtonItem.rs - source](https://docs.rs/objc2-ui-kit/latest/src/objc2_ui_kit/generated/UIBarButtonItem.rs.html#14)
+  plain: int = 0
+  bordered: int = 1  # Deprecated
+  done: int = 2
 
 
 # ref: [UISceneActivationState | Apple Developer Documentation](https://developer.apple.com/documentation/uikit/uiscene/activationstate-swift.enum?language=objc)
@@ -123,4 +134,46 @@ class NSKeyValueObservingOptions:
   old: int = 0x02
   initial: int = 0x04
   prior: int = 0x08
+
+
+# ref: [UIViewAutoresizing | Apple Developer Documentation](https://developer.apple.com/documentation/uikit/uiview/autoresizingmask-swift.struct?language=objc)
+class UIViewAutoresizing:
+  # ref: [UIView.rs - source](https://docs.rs/objc2-ui-kit/latest/src/objc2_ui_kit/generated/UIView.rs.html#112-129)
+  none: int = 0
+  flexibleLeftMargin: int = 1 << 0
+  flexibleWidth: int = 1 << 1
+  flexibleRightMargin: int = 1 << 2
+  flexibleTopMargin: int = 1 << 3
+  flexibleHeight: int = 1 << 4
+  flexibleBottomMargin: int = 1 << 5
+
+
+# ref: [NSTextAlignment | Apple Developer Documentation](https://developer.apple.com/documentation/uikit/nstextalignment?language=objc)
+#@dataclass
+class NSTextAlignment:
+  # ref: [text.rs - source](https://docs.rs/objc2-ui-kit/latest/src/objc2_ui_kit/text.rs.html#26)
+  left: int = 0
+  right: int = 2  # wip: `TARGET_ABI_USES_IOS_VALUES`
+  center: int = 1  # wip: `TARGET_ABI_USES_IOS_VALUES`
+  justified: int = 3
+  natural: int = 4
+
+
+# ref: [UISwipeGestureRecognizerDirection | Apple Developer Documentation](UISwipeGestureRecognizerDirection)
+class UISwipeGestureRecognizerDirection:
+  # ref: [UISwipeGestureRecognizer.rs - source](https://docs.rs/objc2-ui-kit/latest/src/objc2_ui_kit/generated/UISwipeGestureRecognizer.rs.html#15-26)
+  right: int = 1 << 0
+  left: int = 1 << 1
+  up: int = 1 << 2
+  down: int = 1 << 3
+
+
+# ref: [UIScrollViewKeyboardDismissMode | Apple Developer Documentation](UIScrollViewKeyboardDismissMode)
+class UIScrollViewKeyboardDismissMode:
+  # ref: [UIScrollView.rs - source](https://docs.rs/objc2-ui-kit/latest/src/objc2_ui_kit/generated/UIScrollView.rs.html#41)
+  none: int = 0
+  onDrag: int = 1
+  interactive: int = 2
+  onDragWithAccessory: int = 3
+  interactiveWithAccessory: int = 4
 

@@ -1,7 +1,7 @@
 import ctypes
 
 from pyrubicon.objc.api import ObjCClass
-from pyrubicon.objc.api import objc_method
+from pyrubicon.objc.api import objc_method, objc_property
 from pyrubicon.objc.runtime import send_super, SEL
 
 from .lifeCycle import loop
@@ -9,12 +9,14 @@ from .enumerations import (
   UIRectEdge,
   UIBarButtonSystemItem,
 )
-
+from .makeZero import CGRectZero
 from .functions import NSStringFromClass
 from . import pdbr
 
 UINavigationController = ObjCClass('UINavigationController')
 UIBarButtonItem = ObjCClass('UIBarButtonItem')
+UINavigationBarAppearance = ObjCClass('UINavigationBarAppearance')
+UIToolbarAppearance = ObjCClass('UIToolbarAppearance')
 
 
 class RootNavigationController(UINavigationController):
@@ -24,12 +26,27 @@ class RootNavigationController(UINavigationController):
     # xxx: 呼ばない-> `send_super(__class__, self, 'dealloc')`
     #print(f'- {NSStringFromClass(__class__)}: dealloc')
     loop.stop()
-    #print('--- stop')
 
   @objc_method
   def loadView(self):
     send_super(__class__, self, 'loadView')
     #print(f'{NSStringFromClass(__class__)}: loadView')
+
+    navigationBarAppearance = UINavigationBarAppearance.new()
+    navigationBarAppearance.configureWithDefaultBackground()
+
+    self.navigationBar.standardAppearance = navigationBarAppearance
+    self.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+    self.navigationBar.compactAppearance = navigationBarAppearance
+    self.navigationBar.compactScrollEdgeAppearance = navigationBarAppearance
+
+    toolbarAppearance = UIToolbarAppearance.new()
+    toolbarAppearance.configureWithDefaultBackground()
+
+    self.toolbar.standardAppearance = toolbarAppearance
+    self.toolbar.scrollEdgeAppearance = toolbarAppearance
+    self.toolbar.compactAppearance = toolbarAppearance
+    self.toolbar.compactScrollEdgeAppearance = toolbarAppearance
 
   @objc_method
   def viewDidLoad(self):
@@ -90,7 +107,7 @@ class RootNavigationController(UINavigationController):
   def navigationController_willShowViewController_animated_(
       self, navigationController, viewController, animated: bool):
     # xxx: layout 範囲の制限
-    #extendedLayout = UIRectEdge.none
+    extendedLayout = UIRectEdge.none
     #viewController.setEdgesForExtendedLayout_(extendedLayout)
 
     closeButtonItem = UIBarButtonItem.alloc().initWithBarButtonSystemItem(
@@ -102,8 +119,6 @@ class RootNavigationController(UINavigationController):
     visibleViewController = navigationController.visibleViewController
     navigationItem = visibleViewController.navigationItem
     navigationItem.leftBarButtonItem = closeButtonItem
-    
-    
 
   @objc_method
   def doneButtonTapped_(self, sender):
