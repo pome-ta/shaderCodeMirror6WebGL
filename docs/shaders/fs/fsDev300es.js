@@ -60,10 +60,10 @@ resolution.y);
    st.y += 0.5 * sin(0.5 * float(i) * st.x + 0.1 * time + random(i * 1.53));
    st *= rotate(i * 5.0 * PI * srandom(i * 1.42));
  }
- float y = st.y * (100.0 - tan(time));
+ float y = st.y * (100.0 - sin(time));
 
  vec3 color = palette(
-   st.x * 0.2 + 0.1 * time + 0.9 * sin(0.5 * floor(y * INV_PI)) +
+   st.x * 0.2 + 0.1 * time + 0.01 * sin(0.5 * floor(y * INV_PI)) +
 0.1 * random(floor(y * INV_PI)),
    vec3(0.5), vec3(0.5), vec3(1.0),
    vec3(0.0, 0.1, 0.12)) * pow(abs(sin(y)), 0.5);
